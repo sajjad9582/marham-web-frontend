@@ -1,4 +1,4 @@
-import { Doctor,Hospital } from "@/lib/doctors-data";
+import { Doctor, Hospital } from "@/lib/doctors-data";
 import { CheckCircle2, Video } from "lucide-react";
 // import type { Doctor, Hospital } from "@/lib/doctors-data";
 
@@ -82,11 +82,11 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
         )}
 
         {/* Locations grid */}
-        {/* <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5">
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5">
           {doctor.locations.map((h, i) => (
             <LocationBox key={i} h={h} />
           ))}
-        </div> */}
+        </div>
       </div>
     </article>
   );
@@ -104,9 +104,8 @@ function Stat({ label, value, accent }: { label: string; value: string; accent?:
 function LocationBox({ h }: { h: Hospital }) {
   return (
     <div
-      className={`rounded-md border-2 px-3 py-2.5 ${
-        h.isVideo ? "border-[var(--color-brandteal)] bg-[var(--color-skyblue)]" : "border-[var(--color-paleblue)] bg-white"
-      }`}
+      className={`rounded-md border-2 px-3 py-2.5 ${h.isVideo ? "border-[var(--color-brandteal)] bg-[var(--color-skyblue)]" : "border-[var(--color-paleblue)] bg-white"
+        }`}
     >
       <div className="flex items-start justify-between gap-1">
         <p className={`text-xs font-bold ${h.isVideo ? "text-[var(--color-brandblue)]" : "text-[var(--color-darknavy)]"} flex items-center gap-1`}>
