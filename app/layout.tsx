@@ -23,10 +23,10 @@ export default function RootLayout({
       className={cn("antialiased font-sans", openSans.variable)}
     >
       <body className="min-h-svh bg-pagegray font-sans">
-        <ThemeProvider>
+        {/* <ThemeProvider> */}
           <SiteHeader />
           {children}
-        </ThemeProvider>
+        {/* </ThemeProvider> */}
       </body>
     </html>
   )

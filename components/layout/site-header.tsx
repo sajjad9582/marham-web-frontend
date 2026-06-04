@@ -43,8 +43,8 @@ function NavLink({ item }: { item: NavLinkItem }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="min-w-44">
           {item.children.map((child) => (
-            <DropdownMenuItem key={child.href} render={<Link href={child.href} />}>
-              {child.label}
+            <DropdownMenuItem key={child.href} >
+              <Link href={child.href}>{child.label}</Link>
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
@@ -66,23 +66,20 @@ function HeaderActions({ className }: { className?: string }) {
   return (
     <div className={cn("flex items-center gap-2", className)}>
       <Button
-        render={
-          <a
-            href={NAV_ACTIONS.call.href}
-            aria-label={NAV_ACTIONS.call.ariaLabel}
-          />
-        }
+        asChild
         size="icon"
         className="size-9 rounded-md bg-brandblue text-white hover:bg-navyblue"
       >
-        <PhoneIcon className="size-4" />
+        <a href={NAV_ACTIONS.call.href} aria-label={NAV_ACTIONS.call.ariaLabel}>
+          <PhoneIcon className="size-4" />
+        </a>
       </Button>
       <Button
-        render={<Link href={NAV_ACTIONS.login.href} />}
+        asChild
         variant="outline"
         className="h-9 rounded-md border-brandblue px-5 text-[15px] font-normal text-brandblue hover:bg-washblue hover:text-brandblue"
       >
-        {NAV_ACTIONS.login.label}
+        <Link href={NAV_ACTIONS.login.href}>{NAV_ACTIONS.login.label}</Link>
       </Button>
     </div>
   )
@@ -111,18 +108,16 @@ export function SiteHeader() {
         <div className="flex items-center gap-2 xl:hidden">
           <HeaderActions className="hidden sm:flex" />
           <Sheet>
-            <SheetTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-brandblue hover:bg-washblue"
-                  aria-label="Open menu"
-                />
-              }
-            >
-              <MenuIcon className="size-6" />
-            </SheetTrigger>
+            <SheetTrigger asChild>
+  <Button
+    variant="ghost"
+    size="icon"
+    className="text-brandblue hover:bg-washblue"
+    aria-label="Open menu"
+  >
+    <MenuIcon className="size-6" />
+  </Button>
+</SheetTrigger>
             <SheetContent side="right" className="w-full max-w-xs p-0">
               <SheetHeader className="border-b border-lightergray px-4 py-4">
                 <SheetTitle className="sr-only">Menu</SheetTitle>
@@ -147,23 +142,20 @@ export function SiteHeader() {
               </nav>
               <div className="mt-auto flex flex-col gap-2 border-t border-lightergray p-4 sm:hidden">
                 <Button
-                  render={
-                    <a
-                      href={NAV_ACTIONS.call.href}
-                      aria-label={NAV_ACTIONS.call.ariaLabel}
-                    />
-                  }
+                  asChild
                   className="h-10 w-full bg-brandblue text-white hover:bg-navyblue"
                 >
-                  <PhoneIcon className="size-4" />
-                  {NAV_ACTIONS.call.label}
+                  <a href={NAV_ACTIONS.call.href} aria-label={NAV_ACTIONS.call.ariaLabel}>
+                    <PhoneIcon className="size-4" />
+                    {NAV_ACTIONS.call.label}
+                  </a>
                 </Button>
                 <Button
-                  render={<Link href={NAV_ACTIONS.login.href} />}
+                  asChild
                   variant="outline"
                   className="h-10 w-full border-brandblue text-brandblue hover:bg-washblue"
                 >
-                  {NAV_ACTIONS.login.label}
+                  <Link href={NAV_ACTIONS.login.href}>{NAV_ACTIONS.login.label}</Link>
                 </Button>
               </div>
             </SheetContent>
