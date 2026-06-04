@@ -1,0 +1,200 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+  
+  /* Sidebar colors */
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  
+  /* Chart colors */
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  
+  /* Core UI colors */
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  
+  /* Radius */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  
+  /* Marham.pk brand */
+  --color-maingreen: #2fc373;
+  --color-lightgreen: #dcf4f1;
+  --color-darknavy: #0d3b64;
+  --color-steelblue: #4b6d8f;
+  --color-darkblue: #355677;
+  --color-lightblue: #b8ccd0;
+
+  /* Blues (Figma) — bg-mainblue, bg-deepblue, bg-skyblue, etc. */
+  --color-mainblue: #007bff;
+  --color-deepblue: #004d71;
+  --color-navyblue: #01334e;
+  --color-marineblue: #014e76;
+  --color-darkmarine: #014e78;
+  --color-paleblue: #dcebf6;
+  --color-skyblue: #e8f6f9;
+  --color-washblue: #f2fafe;
+  --color-mistblue: #f3f5f9;
+  --color-frostblue: #f6f9fc;
+
+  /* Reds & warm */
+  --color-mainred: #c02942;
+  --color-lightred: #fbe0d0;
+  --color-lightyellow: #fef5de;
+
+  /* Greens (Figma extras) */
+  --color-brightgreen: #48f46a;
+  --color-mintgreen: #dfefeb;
+
+  /* Cyan */
+  --color-maincyan: #17a2b8;
+
+  /* Neutrals — bg-black, bg-darkgray, bg-maingray, bg-pagegray, etc. */
+  --color-black: #000000;
+  --color-white: #ffffff;
+  --color-darkgray: #212529;
+  --color-charcoal: #333333;
+  --color-darkslate: #343a40;
+  --color-graphite: #3a3a3a;
+  --color-gunmetal: #3b4045;
+  --color-slate: #373f50;
+  --color-maingray: #495057;
+  --color-irongray: #4b4b4b;
+  --color-steelgray: #4b566b;
+  --color-midgray: #868686;
+  --color-silvergray: #a9a9a9;
+  --color-softgray: #adadad;
+  --color-lightgray: #d9d9d9;
+  --color-lightergray: #dee2e6;
+  --color-foggray: #ebe8e8;
+  --color-palegray: #f0f0f0;
+  --color-pagegray: #f8f9fa;
+  --color-offwhite: #f9f9f9;
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #2FC373;
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: #0D3B64;
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: #0D3B64;
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: #2FC373;
+  
+  /* Chart colors using Marham palette */
+  --chart-1: #2FC373;
+  --chart-2: #0D3B64;
+  --chart-3: #4B6D8F;
+  --chart-4: #355677;
+  --chart-5: #B8CCD0;
+  
+  --radius: 0.625rem;
+  
+  /* Sidebar */
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: #0D3B64;
+  --sidebar-primary: #2FC373;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: #0D3B64;
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: #2FC373;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: #2FC373;
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: #2FC373;
+  
+  /* Chart colors */
+  --chart-1: #2FC373;
+  --chart-2: #0D3B64;
+  --chart-3: #4B6D8F;
+  --chart-4: #355677;
+  --chart-5: #B8CCD0;
+  
+  /* Sidebar */
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: #2FC373;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: #2FC373;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
