@@ -1,10 +1,10 @@
-import { Button } from "@/components/ui/button"
-
 export default function Page() {
   return (
-    <div className="flex min-h-svh  w-full items-center justify-center bg-mainblue p-6">
-     
-     <h1 className="text-2xl font-bold bg-deepblue text-white p-4 rounded-md">Hello World</h1>
-    </div>
+    <main className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8">
+      <p className="text-maingray">
+        Page content goes here. The top navigation is ready for the new Marham
+        experience.
+      </p>
+    </main>
   )
 }

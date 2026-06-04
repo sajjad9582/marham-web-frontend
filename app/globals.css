@@ -55,6 +55,8 @@
   --radius-4xl: calc(var(--radius) * 2.6);
   
   /* Marham.pk brand */
+  --color-brandblue: #00507a;
+  --color-brandteal: #72cbd6;
   --color-maingreen: #2fc373;
   --color-lightgreen: #dcf4f1;
   --color-darknavy: #0d3b64;
