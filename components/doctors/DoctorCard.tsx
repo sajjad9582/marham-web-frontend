@@ -3,6 +3,11 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Doctor, Hospital } from "@/lib/doctors-data";
+import {
+  buildCallcenterUrl,
+  buildDoctorProfileUrl,
+  buildVideoCallUrl,
+} from "@/lib/doctors-urls";
 import { CheckCircle2, Video } from "lucide-react";
 import { BookAppointmentModal } from "./BookAppointmentModal";
 
@@ -27,6 +32,37 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
   const defaultLocation =
     doctor.locations.find((l) => !l.isVideo) ?? doctor.locations[0] ?? null;
 
+  const urlParams = {
+    doctorId: doctor.doctorId,
+    doctorName: doctor.name,
+    specialityId: doctor.specialityId,
+    specialitySlug: doctor.specialitySlug,
+    citySlug: doctor.pageCitySlug,
+    hospitalCitySlug: defaultLocation?.city,
+  };
+
+  const profileUrl = buildDoctorProfileUrl(urlParams);
+  const videoCallUrl = buildVideoCallUrl(doctor.specialityId, doctor.doctorId);
+  const callcenterUrl = buildCallcenterUrl(urlParams);
+
+  const avatar = doctor.profilePic && !imgError ? (
+    <Image
+      src={doctor.profilePic}
+      alt={doctor.name}
+      width={96}
+      height={96}
+      className="h-20 w-20 md:h-24 md:w-24 rounded-full object-cover ring-4 ring-[var(--color-paleblue)]"
+      onError={() => setImgError(true)}
+    />
+  ) : (
+    <div
+      className="h-20 w-20 md:h-24 md:w-24 rounded-full bg-gradient-to-br from-[var(--color-brandteal)] to-[var(--color-brandblue)] text-white flex items-center justify-center text-xl font-bold ring-4 ring-[var(--color-paleblue)]"
+      aria-hidden
+    >
+      {initials}
+    </div>
+  );
+
   return (
     <>
       <article
@@ -36,31 +72,22 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
       >
         <div className="p-4 md:p-5">
           <div className="flex flex-col md:flex-row gap-4">
-            {/* Avatar */}
             <div className="flex-shrink-0">
-              {doctor.profilePic && !imgError ? (
-                <Image
-                  src={doctor.profilePic}
-                  alt={doctor.name}
-                  width={96}
-                  height={96}
-                  className="h-20 w-20 md:h-24 md:w-24 rounded-full object-cover ring-4 ring-[var(--color-paleblue)]"
-                  onError={() => setImgError(true)}
-                />
-              ) : (
-                <div
-                  className="h-20 w-20 md:h-24 md:w-24 rounded-full bg-gradient-to-br from-[var(--color-brandteal)] to-[var(--color-brandblue)] text-white flex items-center justify-center text-xl font-bold ring-4 ring-[var(--color-paleblue)]"
-                  aria-hidden
-                >
-                  {initials}
-                </div>
-              )}
+              <a href={profileUrl} target="_blank" rel="noopener noreferrer">
+                {avatar}
+              </a>
             </div>
 
-            {/* Info */}
             <div className="flex-1 min-w-0">
               <h3 itemProp="name" className="text-base md:text-lg font-bold text-[var(--color-darknavy)] flex items-center gap-1.5">
-                {doctor.name}
+                <a
+                  href={profileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
+                  {doctor.name}
+                </a>
                 {doctor.isPmc && (
                   <CheckCircle2 className="h-4 w-4 text-[var(--color-maingreen)] fill-[var(--color-maingreen)] text-white flex-shrink-0" aria-label="Verified" />
                 )}
@@ -78,32 +105,28 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
               </dl>
             </div>
 
-            {/* CTAs */}
             <div className="flex flex-col gap-2 w-full md:w-48 md:flex-shrink-0">
               {doctor.hasVideoCall && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const video = doctor.locations.find((l) => l.isVideo);
-                    if (video) openBooking(video);
-                  }}
-                  className="max-h-20 bg-[var(--color-maingreen)] hover:bg-[var(--color-maingreen)]/90 text-white text-sm font-semibold rounded-md px-4 py-2.5 transition-colors"
+                <a
+                  href={videoCallUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="max-h-20 bg-[var(--color-maingreen)] hover:bg-[var(--color-maingreen)]/90 text-white text-sm font-semibold rounded-md px-4 py-2.5 transition-colors text-center"
                 >
                   Book Video Call
-                </button>
+                </a>
               )}
-              <button
-                type="button"
-                onClick={() => defaultLocation && openBooking(defaultLocation)}
-                disabled={!defaultLocation}
-                className="max-h-20 bg-[var(--color-darknavy)] hover:bg-[var(--color-brandblue)] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-md px-4 py-2.5 transition-colors"
+              <a
+                href={callcenterUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="max-h-20 bg-[var(--color-darknavy)] hover:bg-[var(--color-brandblue)] text-white text-sm font-semibold rounded-md px-4 py-2.5 transition-colors text-center"
               >
                 Book Appointment
-              </button>
+              </a>
             </div>
           </div>
 
-          {/* Service pills */}
           {doctor.services.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2">
               {doctor.services.map((s) => (
@@ -117,7 +140,6 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
             </div>
           )}
 
-          {/* Locations grid */}
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5">
             {doctor.locations.map((h, i) => (
               <LocationBox key={i} h={h} onSelect={() => openBooking(h)} />

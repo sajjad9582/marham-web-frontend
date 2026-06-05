@@ -5,6 +5,7 @@ export type Hospital = {
   isVideo?: boolean;
   fastConfirm?: boolean;
   discount?: string;
+  discountPercentage?: number;
   address?: string;
   city?: string;
   slot?: string;
@@ -12,6 +13,11 @@ export type Hospital = {
 
 export type Doctor = {
   id: string;
+  doctorId: number;
+  slug: string;
+  specialityId: number;
+  specialitySlug: string;
+  pageCitySlug: string;
   name: string;
   honorific?: string;
   specialty: string;
@@ -19,6 +25,7 @@ export type Doctor = {
   experience: string;
   satisfaction: string;
   reviews: number;
+  rating: number;
   isPmc: boolean;
   hasVideoCall: boolean;
   services: string[];

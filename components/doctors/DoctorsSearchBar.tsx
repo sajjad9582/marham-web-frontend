@@ -1,18 +1,35 @@
-"use client"
+"use client";
+
 import { MapPin, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { FormEvent, useState } from "react";
+import { slugifySpecialityName } from "@/lib/constants/speciality-slugs";
+import { toSlug } from "@/lib/slugify";
 
 export function DoctorsSearchBar({ city, speciality }: { city: string; speciality: string }) {
+  const router = useRouter();
+  const [cityInput, setCityInput] = useState(city.replace(/-/g, " "));
+  const [specialityInput, setSpecialityInput] = useState(speciality.replace(/-/g, " "));
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    const citySlug = toSlug(cityInput) || city;
+    const specialitySlug = slugifySpecialityName(specialityInput) || speciality;
+    router.push(`/doctors/${citySlug}/${specialitySlug}`);
+  };
+
   return (
     <form
       role="search"
-      onSubmit={(e) => e.preventDefault()}
+      onSubmit={handleSubmit}
       className="bg-white border border-[var(--color-paleblue)] rounded-md p-2 flex items-stretch gap-2"
     >
       <label className="flex-1 flex items-center gap-2 border border-[var(--color-paleblue)] rounded-md px-3">
         <MapPin className="h-4 w-4 text-[var(--color-brandblue)]" aria-hidden />
         <input
           type="text"
-          defaultValue={city.replace(/-/g, " ")}
+          value={cityInput}
+          onChange={(e) => setCityInput(e.target.value)}
           aria-label="City"
           placeholder="Enter City"
           className="bg-transparent outline-none w-full text-sm capitalize text-[var(--color-darknavy)] py-2"
@@ -22,7 +39,8 @@ export function DoctorsSearchBar({ city, speciality }: { city: string; specialit
         <Search className="h-4 w-4 text-[var(--color-brandblue)]" aria-hidden />
         <input
           type="search"
-          defaultValue={speciality.replace(/-/g, " ")}
+          value={specialityInput}
+          onChange={(e) => setSpecialityInput(e.target.value)}
           aria-label="Search doctors"
           placeholder="Search by Doctors"
           className="bg-transparent outline-none w-full text-sm capitalize text-[var(--color-darknavy)] py-2"

@@ -4,6 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { CheckCircle2, X } from "lucide-react";
 import { useState } from "react";
 import type { Doctor, Hospital } from "@/lib/doctors-data";
+import { buildCallcenterUrl } from "@/lib/doctors-urls";
 import { cn } from "@/lib/utils";
 
 type LocationDetails = {
@@ -100,9 +101,18 @@ export function BookAppointmentModal({
 
   const { hospitalName, address, city, slot } = parseLocationDetails(hospital);
 
+  const callcenterUrl = buildCallcenterUrl({
+    doctorId: doctor.doctorId,
+    doctorName: doctor.name,
+    specialityId: doctor.specialityId,
+    specialitySlug: doctor.specialitySlug,
+    citySlug: doctor.pageCitySlug,
+    hospitalCitySlug: hospital.city ?? city,
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onOpenChange(false);
+    window.location.href = callcenterUrl;
   };
 
   return (
@@ -134,9 +144,14 @@ export function BookAppointmentModal({
 
           <div className="rounded-md border border-[var(--color-paleblue)] bg-[var(--color-frostblue)] p-3.5 space-y-2">
             <p className="text-xs text-muted-foreground">{doctor.name}</p>
-            <p className="text-sm font-bold text-[var(--color-brandblue)] underline underline-offset-2">
+            <a
+              href={callcenterUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-bold text-[var(--color-brandblue)] underline underline-offset-2 hover:text-[var(--color-darknavy)]"
+            >
               {hospitalName}
-            </p>
+            </a>
             {address && (
               <p className="text-xs text-muted-foreground">{address}</p>
             )}
@@ -145,12 +160,14 @@ export function BookAppointmentModal({
               <span className="text-[var(--color-paleblue)]" aria-hidden>
                 |
               </span>
-              <button
-                type="button"
+              <a
+                href={callcenterUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-sm font-semibold text-[var(--color-brandblue)] hover:underline"
               >
                 Change Date &amp; Time
-              </button>
+              </a>
             </div>
             <p className="text-sm font-bold text-[var(--color-darknavy)]">
               {hospital.fee}

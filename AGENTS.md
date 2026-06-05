@@ -56,6 +56,15 @@ This frontend **never hosts HTTP APIs**. All endpoints live in `MarhamOne/` (Nes
 
 See `.cursor/rules/api-consumption.mdc` for examples.
 
+### API and legacy URL organization
+
+- **API paths:** `lib/constants/marham-api-endpoints.ts`
+- **Fetch services:** `lib/services/` (e.g. `doctors-listing-service.ts`)
+- **Legacy Marham.pk URLs:** `NEXT_PUBLIC_MARHAM_HOME_URL` + `lib/doctors-urls.ts` + `lib/constants/marham-legacy-urls.ts`
+- **Speciality slug → ID:** `lib/constants/speciality-slugs.ts`
+
+Experimental pages (e.g. doctors listing) redirect booking/profile actions to the legacy Marham.pk site. Do not build booking or profile pages in Next.js until the migration is ready.
+
 ## Page routes
 
 Every `app/**/page.tsx` should be a **thin orchestrator**:

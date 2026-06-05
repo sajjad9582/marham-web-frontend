@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { DoctorCard } from "./DoctorCard";
 import type { Doctor } from "@/lib/doctors-data";
-import { fetchDoctorsListing } from "@/lib/marham-api";
+import { fetchDoctorsListing } from "@/lib/services/doctors-listing-service";
+import type { DoctorsListingFilters } from "@/lib/types/doctors-listing-filters";
 import type { DoctorsListingMeta } from "@/lib/types/marham-api";
 
 const PAGE_SIZE = 6;
@@ -11,17 +12,25 @@ const PAGE_SIZE = 6;
 type DoctorsListProps = {
   doctors: Doctor[];
   meta: DoctorsListingMeta;
+  city: string;
+  speciality: string;
+  filters: DoctorsListingFilters;
 };
 
-export function DoctorsList({ doctors: initialDoctors, meta: initialMeta }: DoctorsListProps) {
+export function DoctorsList({
+  doctors: initialDoctors,
+  meta: initialMeta,
+  city,
+  speciality,
+  filters,
+}: DoctorsListProps) {
   const [doctors, setDoctors] = useState(initialDoctors);
   const [visible, setVisible] = useState(PAGE_SIZE);
   const [currentPage, setCurrentPage] = useState(initialMeta.page);
   const [lastPage, setLastPage] = useState(initialMeta.lastPage);
   const [loading, setLoading] = useState(false);
 
-  const hasMore =
-    visible < doctors.length || currentPage < lastPage;
+  const hasMore = visible < doctors.length || currentPage < lastPage;
 
   const handleLoadMore = async () => {
     if (visible < doctors.length) {
@@ -33,7 +42,12 @@ export function DoctorsList({ doctors: initialDoctors, meta: initialMeta }: Doct
 
     setLoading(true);
     try {
-      const data = await fetchDoctorsListing({ page: currentPage + 1 });
+      const data = await fetchDoctorsListing({
+        ...filters,
+        city,
+        specialitySlug: speciality,
+        page: currentPage + 1,
+      });
       if (data.doctors.length === 0) return;
 
       setDoctors((prev) => [...prev, ...data.doctors]);
