@@ -42,6 +42,7 @@ function mapHospital(hospital: ApiHospital, fastConfirm: boolean): Hospital {
     city: hospital.hospitalCity,
     availability: AVAILABILITY_FALLBACK,
     fee: formatFee(hospital.fee),
+    feeAmount: hospital.fee,
     fastConfirm,
     isVideo,
     discountPercentage: hospital.discountPercentage,
@@ -57,11 +58,43 @@ function sortLocations(locations: Hospital[]): Hospital[] {
   return [...video, ...physical];
 }
 
+function getLowestFee(hospitals: ApiHospital[]): number {
+  if (!hospitals.length) return 0;
+  return Math.min(...hospitals.map((h) => h.fee));
+}
+
+function ensureVideoConsultation(
+  locations: Hospital[],
+  apiHospitals: ApiHospital[],
+  pageCitySlug: string,
+  fastConfirm: boolean,
+): Hospital[] {
+  if (locations.some((l) => l.isVideo)) {
+    return locations;
+  }
+
+  const referenceFee = getLowestFee(apiHospitals);
+  const referenceCity = apiHospitals[0]?.hospitalCity ?? pageCitySlug;
+
+  const syntheticVideo: Hospital = {
+    name: VIDEO_HOSPITAL_NAME,
+    address: "Online appointment",
+    city: referenceCity,
+    availability: AVAILABILITY_FALLBACK,
+    fee: formatFee(referenceFee),
+    feeAmount: referenceFee,
+    fastConfirm,
+    isVideo: true,
+  };
+
+  return sortLocations([syntheticVideo, ...locations]);
+}
+
 export function mapApiDoctor(apiDoctor: ApiDoctor, pageCitySlug: string, specialitySlug: string): Doctor {
   const fastConfirm = apiDoctor.firstComeFirstServe === 1;
-  const locations = sortLocations(
-    (apiDoctor.hospitals ?? []).map((h) => mapHospital(h, fastConfirm)),
-  );
+  const apiHospitals = apiDoctor.hospitals ?? [];
+  const mappedLocations = apiHospitals.map((h) => mapHospital(h, fastConfirm));
+  const locations = ensureVideoConsultation(mappedLocations, apiHospitals, pageCitySlug, fastConfirm);
   const hasVideoCall = locations.some((l) => l.isVideo);
 
   return {

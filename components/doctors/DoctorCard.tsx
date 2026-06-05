@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Doctor, Hospital } from "@/lib/doctors-data";
 import {
-  buildCallcenterUrl,
+  buildBookAppointmentUrl,
   buildDoctorProfileUrl,
   buildVideoCallUrl,
 } from "@/lib/doctors-urls";
@@ -29,21 +29,17 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
     .slice(0, 2)
     .join("");
 
-  const defaultLocation =
-    doctor.locations.find((l) => !l.isVideo) ?? doctor.locations[0] ?? null;
-
   const urlParams = {
     doctorId: doctor.doctorId,
     doctorName: doctor.name,
     specialityId: doctor.specialityId,
     specialitySlug: doctor.specialitySlug,
     citySlug: doctor.pageCitySlug,
-    hospitalCitySlug: defaultLocation?.city,
   };
 
   const profileUrl = buildDoctorProfileUrl(urlParams);
   const videoCallUrl = buildVideoCallUrl(doctor.specialityId, doctor.doctorId);
-  const callcenterUrl = buildCallcenterUrl(urlParams);
+  const bookAppointmentUrl = buildBookAppointmentUrl(urlParams);
 
   const avatar = doctor.profilePic && !imgError ? (
     <Image
@@ -117,7 +113,7 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
                 </a>
               )}
               <a
-                href={callcenterUrl}
+                href={bookAppointmentUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="max-h-20 bg-[var(--color-darknavy)] hover:bg-[var(--color-brandblue)] text-white text-sm font-semibold rounded-md px-4 py-2.5 transition-colors text-center"

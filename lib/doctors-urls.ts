@@ -32,6 +32,17 @@ export function buildVideoCallUrl(specialityId: number, doctorId: number): strin
   return `${home}${MARHAM_LEGACY_PATHS.VIDEO_CALL_REQUEST}?id=${specialityId}&d_id=${doctorId}`;
 }
 
+export function buildBookAppointmentUrl(params: DoctorUrlParams): string {
+  const home = getMarhamHomeUrl();
+  const doctorSlug = doctorNameToSlug(params.doctorName);
+  const path = MARHAM_LEGACY_PATHS.BOOK_APPOINTMENT.replace("{specialitySlug}", params.specialitySlug)
+    .replace("{citySlug}", params.citySlug)
+    .replace("{doctorSlug}", doctorSlug)
+    .replace("{doctorId}", String(params.doctorId));
+
+  return `${home}${path}`;
+}
+
 export function buildCallcenterUrl(params: DoctorUrlParams): string {
   const home = getMarhamHomeUrl();
   const doctorSlug = doctorNameToSlug(params.doctorName);

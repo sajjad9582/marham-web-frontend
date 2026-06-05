@@ -31,8 +31,32 @@ function buildListingQueryParams(filters: DoctorsListingFilters): URLSearchParam
   return params;
 }
 
+function locationMatchesFee(
+  location: Doctor["locations"][number],
+  minFee?: number,
+  maxFee?: number,
+): boolean {
+  if (minFee !== undefined && location.feeAmount < minFee) return false;
+  if (maxFee !== undefined && location.feeAmount > maxFee) return false;
+  return true;
+}
+
+function applyFeeFilter(doctors: Doctor[], filters: DoctorsListingFilters): Doctor[] {
+  const { minFee, maxFee } = filters;
+  if (minFee === undefined && maxFee === undefined) return doctors;
+
+  return doctors
+    .map((doctor) => ({
+      ...doctor,
+      locations: doctor.locations.filter((l) =>
+        locationMatchesFee(l, minFee, maxFee),
+      ),
+    }))
+    .filter((doctor) => doctor.locations.length > 0);
+}
+
 function applyClientFilters(doctors: Doctor[], filters: DoctorsListingFilters): Doctor[] {
-  let result = [...doctors];
+  let result = applyFeeFilter(doctors, filters);
 
   if (filters.discounts) {
     result = result.filter((d) =>
