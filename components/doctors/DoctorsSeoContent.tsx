@@ -94,19 +94,68 @@ export function DoctorsSeoContent({ city, speciality }: { city: string; speciali
         </h2>
         <div className="divide-y divide-[var(--color-paleblue)] border border-[var(--color-paleblue)] rounded-md">
           {[
-            { q: `Which symptoms and issues are treated by ${specName}s in ${cityName}?`, a: `${specName}s treat issues such as vaccination, newborn examinations, emergency treatment, management of paediatric illness, nutrition assessment and short-stature concerns.` },
-            { q: `Who is the best ${specName} in ${cityName}?`, a: `Top names include Asst. Prof. Dr. Muhammad Zafar Iqbal, Dr. Faiza Kaifee, Prof. Dr. Brig R Lutfullah Goheer, Prof. Dr. Shabir Ahmad and Dr. Muhammad Shoaib Rasool.` },
-            { q: `How to book an appointment with the best doctor in ${cityName}?`, a: `Visit the doctor's profile and click Book Appointment, or call our helpline to confirm your slot.` },
-            { q: `How to choose a best child specialist in ${cityName}?`, a: `Compare doctors by experience, patient reviews, services offered, qualifications and clinic locations.` },
-            { q: `How much does a ${specName} cost in ${cityName}?`, a: `The fee typically ranges from PKR 500 to PKR 4,000 depending on the doctor and clinic.` },
-            { q: `How can I find a ${specName} near me in ${cityName}?`, a: `Use the "Doctors Near Me" filter at the top of this page to see the closest verified specialists.` },
+            {
+              q: `Which symptoms and issues are treated by ${specName}s in ${cityName}?`,
+              a: `${specName} specialists in ${cityName} provide the best services and treat issues like Complete Vaccination, Detailed Newborn Examine, Emergency Treatment, Management Of Pediatric Illness, Nutrition Assessment, Short Stature.`,
+            },
+            {
+              q: `Who is the best ${specName} in ${cityName}?`,
+              a: (
+                <>
+                  <p>Following are the best {specName}s in {cityName}:</p>
+                  <ul className="list-disc pl-5 mt-2 space-y-1">
+                    <li>Asst. Prof. Dr. Muhammad Zafar Iqbal</li>
+                    <li>Dr. Faiza Kaifee</li>
+                    <li>Prof. Dr. Brig R Lutfullah Goheer</li>
+                    <li>Prof. Dr. Shabir Ahmad</li>
+                    <li>Dr. Muhammad Shoaib Rasool</li>
+                  </ul>
+                </>
+              ),
+            },
+            {
+              q: `How to book an appointment with the best doctor in ${cityName}?`,
+              a: `You can book an appointment online by visiting the doctor's profile, or call our Marham helpline: 03111222398 to book your appointment.`,
+            },
+            {
+              q: `How to choose a best child specialist in ${cityName}?`,
+              a: `You can choose the best child specialist based on their experience, patient reviews, services, qualification, and locations.`,
+            },
+            {
+              q: `How much does a ${specName} cost in ${cityName}?`,
+              a: `The fee of a ${specName} in ${cityName} ranges from PKR 500 to PKR 4000.`,
+            },
+            {
+              q: `Who is the top paediatrician in ${cityName} 2026?`,
+              a: (
+                <>
+                  <p>The following are the top paediatrician in {cityName}:</p>
+                  <ul className="list-disc pl-5 mt-2 space-y-1">
+                    <li>Asst. Prof. Dr. Binish Ali</li>
+                    <li>Dr. Tariq Rafiq Khan</li>
+                    <li>Prof. Dr. Muhammad Khalid Masood</li>
+                    <li>Prof. Dr. Shabir Ahmad</li>
+                    <li>Prof. Dr. Muhammad Rafique</li>
+                    <li>Dr. Shahzad Khurram</li>
+                    <li>Dr. Shahid Aslam</li>
+                    <li>Dr. Mazhar Abbas Butt</li>
+                    <li>Assoc. Prof. Dr. Muhammad Sajid</li>
+                    <li>Asst. Prof. Dr. Muhammad Zafar Iqbal</li>
+                  </ul>
+                </>
+              ),
+            },
+            {
+              q: `How can I find a ${specName} near me in ${cityName}?`,
+              a: `You can find the best ${specName} near you in ${cityName} using the "Doctors Near Me" filter. It will show you the nearest ${specName}s as per your location.`,
+            },
           ].map((f, i) => (
             <details key={i} className="group p-4 open:bg-[var(--color-washblue)]">
               <summary className="cursor-pointer font-semibold text-sm text-[var(--color-darknavy)] flex justify-between items-center gap-3">
                 {f.q}
                 <span className="text-[var(--color-brandblue)] text-lg leading-none group-open:rotate-45 transition-transform">+</span>
               </summary>
-              <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>
+              <div className="mt-2 text-sm text-muted-foreground">{f.a}</div>
             </details>
           ))}
         </div>
