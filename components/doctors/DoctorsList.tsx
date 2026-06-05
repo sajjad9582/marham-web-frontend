@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { DoctorCard } from "./DoctorCard";
 import type { Doctor } from "@/lib/doctors-data";
+import { fetchDoctorsListing } from "@/lib/marham-api";
 import type { DoctorsListingMeta } from "@/lib/types/marham-api";
 
 const PAGE_SIZE = 6;
@@ -32,10 +33,9 @@ export function DoctorsList({ doctors: initialDoctors, meta: initialMeta }: Doct
 
     setLoading(true);
     try {
-      const res = await fetch(`/api/doctors-listing?page=${currentPage + 1}`);
-      if (!res.ok) return;
+      const data = await fetchDoctorsListing({ page: currentPage + 1 });
+      if (data.doctors.length === 0) return;
 
-      const data = (await res.json()) as { doctors: Doctor[]; meta: DoctorsListingMeta };
       setDoctors((prev) => [...prev, ...data.doctors]);
       setCurrentPage(data.meta.page);
       setLastPage(data.meta.lastPage);

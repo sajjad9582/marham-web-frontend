@@ -21,7 +21,7 @@ export default async function SpecialitiesPage({ params }: PageProps) {
   const city = safeSlug[0] ?? ""
   const speciality = safeSlug[1] ?? ""
 
-  const { doctors, meta } = await fetchDoctorsListing({ page: 1 })
+  const { doctors, meta } = await fetchDoctorsListing({ page: 1 }, { revalidate: 60 })
 
   const jsonLd = {
     "@context": "https://schema.org",

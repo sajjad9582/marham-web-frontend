@@ -26,10 +26,35 @@ components/
   layout/               # SiteHeader, Footer, etc.
   logo/                 # Brand assets
 hooks/                  # use-* hooks
-lib/                    # Data, utils, config, API
+lib/                    # Data, utils, config, API clients (consume MarhamOne)
 ```
 
 Path alias: `@/*` → project root.
+
+## Backend API consumption (mandatory)
+
+This frontend **never hosts HTTP APIs**. All endpoints live in `MarhamOne/` (NestJS).
+
+### Never create
+
+- `app/api/**/route.ts` (Route Handlers)
+- Next.js API proxies or BFF layers
+- Server Actions used as API endpoints
+- TanStack `createServerFn` wrappers acting as backend logic
+
+### Always do
+
+1. Add the endpoint in `MarhamOne/src/modules/` and update `MarhamOne/API_DOCUMENTATION.md`
+2. Add a typed fetch helper in `lib/` (e.g. `lib/marham-api.ts`, `lib/types/`)
+3. Call the helper from pages or components — never implement endpoints in Next.js
+
+### Fetching patterns
+
+- **Server Components:** call `lib/` fetchers with `next: { revalidate }` where appropriate
+- **Client Components:** call the same `lib/` fetchers using `NEXT_PUBLIC_MARHAM_API_URL` (browser → NestJS via CORS)
+- **Env:** `NEXT_PUBLIC_MARHAM_API_URL` for the NestJS base URL — never put secrets in `NEXT_PUBLIC_*`
+
+See `.cursor/rules/api-consumption.mdc` for examples.
 
 ## Page routes
 

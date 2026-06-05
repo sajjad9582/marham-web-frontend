@@ -28,8 +28,10 @@ app/              → routes only (thin pages)
 components/ui/    → shadcn primitives (do not edit heavily)
 components/<feature>/  → feature UI (doctors, layout, logo, …)
 hooks/            → use-* hooks
-lib/              → data, utils, config, API helpers
+lib/              → data, utils, config, API clients (consume MarhamOne — never host APIs)
 ```
+
+See `api-consumption.mdc` for the no-Next.js-API rule.
 
 ## Page routes (`app/**/page.tsx`)
 
