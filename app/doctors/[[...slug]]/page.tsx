@@ -47,7 +47,7 @@ export default async function SpecialitiesPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="max-w-6xl mx-auto px-4 py-4 md:py-6 space-y-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-4 md:py-6 space-y-4">
       <DoctorsHero city={city} speciality={speciality} />
         <DoctorsSearchBar city={city} speciality={speciality} />
         <DoctorsFilterChips />

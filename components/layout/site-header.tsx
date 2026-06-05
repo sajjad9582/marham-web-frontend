@@ -1,5 +1,8 @@
+// site-header.tsx
+
 "use client"
 
+import * as React from "react"
 import Link from "next/link"
 import { ChevronDownIcon, MenuIcon, PhoneIcon } from "lucide-react"
 
@@ -26,25 +29,43 @@ import {
 import { cn } from "@/lib/utils"
 
 const navLinkClass =
-  "inline-flex items-center gap-0.5 text-[15px] font-normal text-maingray transition-colors hover:text-brandblue"
+  "inline-flex items-center gap-0.5 text-[15px] font-normal text-maingray transition-colors hover:bg-deepblue rounded-sm px-2 py-1 hover:text-white"
 
 function NavLink({ item }: { item: NavLinkItem }) {
+  const [isOpen, setIsOpen] = React.useState(false)
+
   if (item.hasDropdown && item.children?.length) {
     return (
-      <DropdownMenu>
+      <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger
+          asChild
           className={cn(
             navLinkClass,
-            "rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-brandblue/30"
+            "rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-brandblue/30 cursor-pointer"
           )}
+          onMouseEnter={() => setIsOpen(true)}
+          onMouseLeave={() => setIsOpen(false)}
         >
-          {item.label}
-          <ChevronDownIcon className="size-3.5 opacity-70" />
+          <Link href={item.href}>
+            {item.label}
+            <ChevronDownIcon className={cn("size-3.5 opacity-70 transition-transform duration-200", isOpen && "rotate-180")} />
+          </Link>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="min-w-44">
+        <DropdownMenuContent
+          align="start"
+          className="min-w-56 bg-white py-2 shadow-lg border border-lightergray rounded-md"
+          onMouseEnter={() => setIsOpen(true)}
+          onMouseLeave={() => setIsOpen(false)}
+        >
           {item.children.map((child) => (
-            <DropdownMenuItem key={child.href} >
-              <Link href={child.href}>{child.label}</Link>
+            <DropdownMenuItem
+              key={child.href}
+              asChild
+              className="focus:bg-washblue focus:text-brandblue text-maingray cursor-pointer px-4 py-2 text-[15px] font-normal rounded-none"
+            >
+              <Link href={child.href} className="w-full block">
+                {child.label}
+              </Link>
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
@@ -88,7 +109,7 @@ function HeaderActions({ className }: { className?: string }) {
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-lightergray bg-white">
-      <div className="mx-auto flex h-14 max-w-[1400px] items-center justify-between gap-4 px-4 sm:h-[60px] sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-4 px-4 sm:h-[60px] sm:px-6 lg:px-10">
         <MarhamLogo width={110} className="sm:hidden" />
         <MarhamLogo width={120} className="hidden sm:block" />
 
@@ -109,38 +130,52 @@ export function SiteHeader() {
           <HeaderActions className="hidden sm:flex" />
           <Sheet>
             <SheetTrigger asChild>
-  <Button
-    variant="ghost"
-    size="icon"
-    className="text-brandblue hover:bg-washblue"
-    aria-label="Open menu"
-  >
-    <MenuIcon className="size-6" />
-  </Button>
-</SheetTrigger>
-            <SheetContent side="right" className="w-full max-w-xs p-0">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-brandblue hover:bg-washblue"
+                aria-label="Open menu"
+              >
+                <MenuIcon className="size-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-full max-w-xs p-0 flex flex-col">
               <SheetHeader className="border-b border-lightergray px-4 py-4">
                 <SheetTitle className="sr-only">Menu</SheetTitle>
                 <MarhamLogo width={110} />
               </SheetHeader>
               <nav
-                className="flex flex-col gap-1 px-2 py-3"
+                className="flex-1 flex flex-col gap-1 px-2 py-3 overflow-y-auto"
                 aria-label="Mobile navigation"
               >
                 {MAIN_NAV_LINKS.map((item) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    className="flex items-center justify-between rounded-md px-3 py-2.5 text-[15px] text-maingray transition-colors hover:bg-pagegray hover:text-brandblue"
-                  >
-                    {item.label}
-                    {item.hasDropdown ? (
-                      <ChevronDownIcon className="size-4 opacity-60" />
-                    ) : null}
-                  </Link>
+                  <div key={item.label} className="flex flex-col">
+                    <Link
+                      href={item.href}
+                      className="flex items-center justify-between rounded-md px-3 py-2.5 text-[15px] text-maingray transition-colors hover:bg-pagegray hover:text-brandblue"
+                    >
+                      {item.label}
+                      {item.hasDropdown ? (
+                        <ChevronDownIcon className="size-4 opacity-60" />
+                      ) : null}
+                    </Link>
+                    {item.hasDropdown && item.children?.length && (
+                      <div className="ml-4 flex flex-col border-l border-lightergray pl-2">
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            className="rounded-md px-3 py-2 text-[14px] text-maingray transition-colors hover:text-brandblue"
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 ))}
               </nav>
-              <div className="mt-auto flex flex-col gap-2 border-t border-lightergray p-4 sm:hidden">
+              <div className="mt-auto flex flex-col gap-2 border-t border-lightergray p-4 sm:hidden bg-white">
                 <Button
                   asChild
                   className="h-10 w-full bg-brandblue text-white hover:bg-navyblue"

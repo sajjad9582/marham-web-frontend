@@ -64,11 +64,7 @@ export const getDoctors = (city: string, _speciality: string): Doctor[] => {
         { name: `Shalamar Hospital, MughalPura, ${cityName}`, availability: "Available Today", fee: "Rs. 2,500" },
         { name: "Khawaja Arshad Hospital, Satellite Town, Sargodha", availability: "Available from Jun 07", fee: "Rs. 2,000" },
         
-        { name: "Video Consultation", availability: "Available Today", fee: "Rs. 2,000", isVideo: true },
-        { name: "Children care hospital, Sialkot Road, Gujranwala", availability: "Available from Jun 07", fee: "Rs. 2,000" },
-        { name: `Shalamar Hospital, MughalPura, ${cityName}`, availability: "Available Today", fee: "Rs. 2,500" },
-        { name: "Khawaja Arshad Hospital, Satellite Town, Sargodha", availability: "Available from Jun 07", fee: "Rs. 2,000" },
-      ],
+   ],
     },
     {
       id: "2",
