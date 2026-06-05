@@ -1,0 +1,47 @@
+---
+description: App Router page conventions — keep routes thin
+globs: app/**/page.tsx
+alwaysApply: false
+---
+
+# Page route rules
+
+Pages are **composition roots**, not feature implementations.
+
+## Do in `page.tsx`
+
+- Parse `params` / `searchParams`
+- Call `lib/` data functions or fetch APIs
+- Set metadata (`generateMetadata`) when needed
+- Render `<main>` wrapper + import feature components
+- JSON-LD / SEO scripts (small inline blocks only)
+
+## Do NOT in `page.tsx`
+
+- Large JSX trees or repeated markup
+- Client state (`useState`, `useEffect`)
+- Form handling, modals, or interactive UI
+- Utility functions — move to `lib/`
+- Reusable UI — move to `components/<feature>/`
+
+## Example (doctors route)
+
+```tsx
+import { DoctorsHero } from "@/components/doctors/DoctorsHero"
+import { DoctorsList } from "@/components/doctors/DoctorsList"
+import { getDoctors } from "@/lib/doctors-data"
+
+export default async function Page({ params }: PageProps) {
+  const { slug } = await params
+  const doctors = getDoctors(slug?.[0] ?? "", slug?.[1] ?? "")
+
+  return (
+    <main className="bg-white min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 py-6 space-y-4">
+        <DoctorsHero city={slug?.[0] ?? ""} speciality={slug?.[1] ?? ""} />
+        <DoctorsList doctors={doctors} />
+      </div>
+    </main>
+  )
+}
+```

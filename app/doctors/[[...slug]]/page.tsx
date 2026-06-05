@@ -4,7 +4,8 @@ import { DoctorsList } from "@/components/doctors/DoctorsList";
 import { DoctorsRelatedLinks } from "@/components/doctors/DoctorsRelatedLinks";
 import { DoctorsSearchBar } from "@/components/doctors/DoctorsSearchBar";
 import { DoctorsSeoContent } from "@/components/doctors/DoctorsSeoContent";
-import { formatSlug, getDoctors } from "@/lib/doctors-data";
+import { formatSlug } from "@/lib/doctors-data";
+import { fetchDoctorsListing } from "@/lib/marham-api";
 type PageProps = {
   params: Promise<{
     slug?: string[]
@@ -20,7 +21,7 @@ export default async function SpecialitiesPage({ params }: PageProps) {
   const city = safeSlug[0] ?? ""
   const speciality = safeSlug[1] ?? ""
 
-  const doctors = getDoctors(city, speciality)
+  const { doctors, meta } = await fetchDoctorsListing({ page: 1 })
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -48,10 +49,10 @@ export default async function SpecialitiesPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-4 md:py-6 space-y-4">
-      <DoctorsHero city={city} speciality={speciality} />
+      <DoctorsHero city={city} speciality={speciality} totalCount={meta.total} />
         <DoctorsSearchBar city={city} speciality={speciality} />
         <DoctorsFilterChips />
-        <DoctorsList doctors={doctors} />
+        <DoctorsList doctors={doctors} meta={meta} />
         <DoctorsSeoContent city={city} speciality={speciality} />
         <DoctorsRelatedLinks city={city} speciality={speciality} />
       </div>

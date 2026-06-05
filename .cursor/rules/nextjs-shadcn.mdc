@@ -1,0 +1,66 @@
+---
+description: Next.js + shadcn project standards — UI, styling, and structure
+alwaysApply: true
+---
+
+# Next.js + shadcn (Marham)
+
+## Stack
+
+- **Next.js App Router** — read `node_modules/next/dist/docs/` before using APIs; this version may differ from training data.
+- **UI**: shadcn/ui only (`components/ui/`). Add new primitives via `npx shadcn@latest add <component>`.
+- **Icons**: `lucide-react` only.
+- **Never** add other UI libraries (MUI, Chakra, Ant Design, Bootstrap, Headless UI direct imports, styled-components, etc.).
+
+## Styling
+
+- **Tailwind only** — no inline `style={{}}`, no CSS modules, no new global CSS unless extending `app/globals.css`.
+- Use colors already defined in `app/globals.css`:
+  - Semantic: `bg-background`, `text-foreground`, `bg-primary`, `text-primary-foreground`, `bg-muted`, `text-muted-foreground`, `border-border`, `ring-ring`, etc.
+  - Brand: `bg-maingreen`, `text-darknavy`, `bg-brandblue`, `bg-skyblue`, `bg-pagegray`, `text-maingray`, `bg-mainblue`, `text-mainred`, etc.
+- Prefer Tailwind token classes (`bg-skyblue`) over raw hex or `var(--color-*)` in className.
+- Use `cn()` from `@/lib/utils` to merge classes.
+
+## Folder structure
+
+```
+app/              → routes only (thin pages)
+components/ui/    → shadcn primitives (do not edit heavily)
+components/<feature>/  → feature UI (doctors, layout, logo, …)
+hooks/            → use-* hooks
+lib/              → data, utils, config, API helpers
+```
+
+## Page routes (`app/**/page.tsx`)
+
+Keep pages **minimal** — fetch data, pass props, compose components:
+
+```tsx
+// ✅ GOOD — page is a thin orchestrator
+export default async function Page({ params }: PageProps) {
+  const data = getData(await params)
+  return (
+    <main className="bg-white min-h-screen">
+      <FeatureHero {...data} />
+      <FeatureList items={data.items} />
+    </main>
+  )
+}
+```
+
+- No large JSX blocks, forms, or business logic in page files.
+- Move UI to `components/<feature>/`, data/logic to `lib/`.
+- Use `"use client"` only in components that need interactivity — keep pages as Server Components when possible.
+
+## Components
+
+- PascalCase files: `DoctorCard.tsx`, `site-header.tsx` (match existing folder convention).
+- Feature components live under `components/<feature>/`, not in `app/`.
+- Reuse shadcn primitives (`Button`, `Sheet`, `DropdownMenu`, …) from `@/components/ui`.
+- Imports use `@/` alias.
+
+## Code style
+
+- Functional components, TypeScript interfaces for props.
+- Small focused components — split when a file grows past ~150 lines.
+- Minimal diffs; match existing patterns in the codebase.

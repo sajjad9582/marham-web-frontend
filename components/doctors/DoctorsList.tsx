@@ -1,23 +1,64 @@
-"use client"
+"use client";
+
 import { useState } from "react";
 import { DoctorCard } from "./DoctorCard";
 import type { Doctor } from "@/lib/doctors-data";
+import type { DoctorsListingMeta } from "@/lib/types/marham-api";
 
-export function DoctorsList({ doctors }: { doctors: Doctor[] }) {
-  const [visible, setVisible] = useState(6);
+const PAGE_SIZE = 6;
+
+type DoctorsListProps = {
+  doctors: Doctor[];
+  meta: DoctorsListingMeta;
+};
+
+export function DoctorsList({ doctors: initialDoctors, meta: initialMeta }: DoctorsListProps) {
+  const [doctors, setDoctors] = useState(initialDoctors);
+  const [visible, setVisible] = useState(PAGE_SIZE);
+  const [currentPage, setCurrentPage] = useState(initialMeta.page);
+  const [lastPage, setLastPage] = useState(initialMeta.lastPage);
+  const [loading, setLoading] = useState(false);
+
+  const hasMore =
+    visible < doctors.length || currentPage < lastPage;
+
+  const handleLoadMore = async () => {
+    if (visible < doctors.length) {
+      setVisible((v) => v + PAGE_SIZE);
+      return;
+    }
+
+    if (currentPage >= lastPage || loading) return;
+
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/doctors-listing?page=${currentPage + 1}`);
+      if (!res.ok) return;
+
+      const data = (await res.json()) as { doctors: Doctor[]; meta: DoctorsListingMeta };
+      setDoctors((prev) => [...prev, ...data.doctors]);
+      setCurrentPage(data.meta.page);
+      setLastPage(data.meta.lastPage);
+      setVisible((v) => v + PAGE_SIZE);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {doctors.slice(0, visible).map((d) => (
         <DoctorCard key={d.id} doctor={d} />
       ))}
-      {visible < doctors.length && (
+      {hasMore && (
         <div className="flex justify-center pt-2">
           <button
             type="button"
-            onClick={() => setVisible((v) => v + 6)}
-            className="bg-[var(--color-brandblue)] hover:bg-[var(--color-darknavy)] text-white font-semibold rounded-md px-8 py-2.5 text-sm transition-colors"
+            onClick={handleLoadMore}
+            disabled={loading}
+            className="bg-[var(--color-brandblue)] hover:bg-[var(--color-darknavy)] disabled:opacity-50 text-white font-semibold rounded-md px-8 py-2.5 text-sm transition-colors"
           >
-            Load More
+            {loading ? "Loading..." : "Load More"}
           </button>
         </div>
       )}

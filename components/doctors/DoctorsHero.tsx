@@ -1,15 +1,24 @@
 import { Phone, Search } from "lucide-react";
 import { CITIES, SPECIALITY_QUICK_LINKS, TOTAL_COUNT, formatSlug } from "@/lib/doctors-data";
 
-export function DoctorsHero({ city, speciality }: { city: string; speciality: string }) {
+export function DoctorsHero({
+  city,
+  speciality,
+  totalCount,
+}: {
+  city: string;
+  speciality: string;
+  totalCount?: number;
+}) {
   const cityName = formatSlug(city);
   const specName = formatSlug(speciality);
+  const count = totalCount ?? TOTAL_COUNT;
 
   return (
     <section className="bg-white border border-[var(--color-paleblue)] rounded-lg p-5 md:p-7 space-y-6">
       {/* <div className="max-w-6xl mx-auto px-4 pt-6 pb-4"> */}
         <h1 className="text-xl md:text-2xl font-bold text-[var(--color-darknavy)]">
-          {TOTAL_COUNT} Best {specName}s In {cityName}
+          {count} Best {specName}s In {cityName}
         </h1>
         <nav aria-label="Breadcrumb" className="mt-2 text-xs md:text-sm">
           <ol className="flex items-center gap-1.5 text-[var(--color-brandblue)] flex-wrap">

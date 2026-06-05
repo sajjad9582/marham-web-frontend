@@ -1,8 +1,21 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
 import { Doctor, Hospital } from "@/lib/doctors-data";
 import { CheckCircle2, Video } from "lucide-react";
-// import type { Doctor, Hospital } from "@/lib/doctors-data";
+import { BookAppointmentModal } from "./BookAppointmentModal";
 
 export function DoctorCard({ doctor }: { doctor: Doctor }) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
+  const [imgError, setImgError] = useState(false);
+
+  const openBooking = (hospital: Hospital) => {
+    setSelectedHospital(hospital);
+    setModalOpen(true);
+  };
+
   const initials = doctor.name
     .replace(/^(Asst\.|Assoc\.|Prof\.|Dr\.|Brig|R|Sr\.) ?/gi, "")
     .trim()
@@ -11,84 +24,115 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
     .slice(0, 2)
     .join("");
 
+  const defaultLocation =
+    doctor.locations.find((l) => !l.isVideo) ?? doctor.locations[0] ?? null;
+
   return (
-    <article
-      itemScope
-      itemType="https://schema.org/Physician"
-      className="bg-white border border-[var(--color-paleblue)] rounded-lg overflow-hidden hover:shadow-md transition-shadow"
-    >
-      <div className="p-4 md:p-5">
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Avatar */}
-          <div className="flex-shrink-0">
-            <div
-              className="h-20 w-20 md:h-24 md:w-24 rounded-full bg-gradient-to-br from-[var(--color-brandteal)] to-[var(--color-brandblue)] text-white flex items-center justify-center text-xl font-bold ring-4 ring-[var(--color-paleblue)]"
-              aria-hidden
-            >
-              {initials}
+    <>
+      <article
+        itemScope
+        itemType="https://schema.org/Physician"
+        className="bg-white border border-[var(--color-paleblue)] rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+      >
+        <div className="p-4 md:p-5">
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Avatar */}
+            <div className="flex-shrink-0">
+              {doctor.profilePic && !imgError ? (
+                <Image
+                  src={doctor.profilePic}
+                  alt={doctor.name}
+                  width={96}
+                  height={96}
+                  className="h-20 w-20 md:h-24 md:w-24 rounded-full object-cover ring-4 ring-[var(--color-paleblue)]"
+                  onError={() => setImgError(true)}
+                />
+              ) : (
+                <div
+                  className="h-20 w-20 md:h-24 md:w-24 rounded-full bg-gradient-to-br from-[var(--color-brandteal)] to-[var(--color-brandblue)] text-white flex items-center justify-center text-xl font-bold ring-4 ring-[var(--color-paleblue)]"
+                  aria-hidden
+                >
+                  {initials}
+                </div>
+              )}
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+              <h3 itemProp="name" className="text-base md:text-lg font-bold text-[var(--color-darknavy)] flex items-center gap-1.5">
+                {doctor.name}
+                {doctor.isPmc && (
+                  <CheckCircle2 className="h-4 w-4 text-[var(--color-maingreen)] fill-[var(--color-maingreen)] text-white flex-shrink-0" aria-label="Verified" />
+                )}
+              </h3>
+              {doctor.isPmc && (
+                <p className="text-xs md:text-sm font-semibold text-[var(--color-maingreen)] mt-0.5">PMDC Verified</p>
+              )}
+              <p itemProp="medicalSpecialty" className="text-sm text-[var(--color-darknavy)] mt-1.5">{doctor.specialty}</p>
+              <p className="text-xs md:text-sm text-muted-foreground mt-0.5">{doctor.qualifications}</p>
+
+              <dl className="mt-3 grid grid-cols-3 gap-2 max-w-md">
+                <Stat label="Reviews" value={doctor.reviews.toString()} accent />
+                <Stat label="Experience" value={doctor.experience} />
+                <Stat label="Satisfaction" value={doctor.satisfaction} />
+              </dl>
+            </div>
+
+            {/* CTAs */}
+            <div className="flex flex-col gap-2 w-full md:w-48 md:flex-shrink-0">
+              {doctor.hasVideoCall && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const video = doctor.locations.find((l) => l.isVideo);
+                    if (video) openBooking(video);
+                  }}
+                  className="max-h-20 bg-[var(--color-maingreen)] hover:bg-[var(--color-maingreen)]/90 text-white text-sm font-semibold rounded-md px-4 py-2.5 transition-colors"
+                >
+                  Book Video Call
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => defaultLocation && openBooking(defaultLocation)}
+                disabled={!defaultLocation}
+                className="max-h-20 bg-[var(--color-darknavy)] hover:bg-[var(--color-brandblue)] disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-md px-4 py-2.5 transition-colors"
+              >
+                Book Appointment
+              </button>
             </div>
           </div>
 
-          {/* Info */}
-          <div className="flex-1 min-w-0">
-            <h3 itemProp="name" className="text-base md:text-lg font-bold text-[var(--color-darknavy)] flex items-center gap-1.5">
-              {doctor.name}
-              {doctor.isPmc && (
-                <CheckCircle2 className="h-4 w-4 text-[var(--color-maingreen)] fill-[var(--color-maingreen)] text-white flex-shrink-0" aria-label="Verified" />
-              )}
-            </h3>
-            <p className="text-xs md:text-sm font-semibold text-[var(--color-maingreen)] mt-0.5">PMDC Verified</p>
-            <p itemProp="medicalSpecialty" className="text-sm text-[var(--color-darknavy)] mt-1.5">{doctor.specialty}</p>
-            <p className="text-xs md:text-sm text-muted-foreground mt-0.5">{doctor.qualifications}</p>
+          {/* Service pills */}
+          {doctor.services.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {doctor.services.map((s) => (
+                <span
+                  key={s}
+                  className="text-xs px-2.5 py-1 rounded-md bg-[var(--color-skyblue)] text-[var(--color-brandblue)] border border-[var(--color-paleblue)]"
+                >
+                  {s}
+                </span>
+              ))}
+            </div>
+          )}
 
-            <dl className="mt-3 grid grid-cols-3 gap-2 max-w-md">
-              <Stat label="Reviews" value={doctor.reviews.toString()} accent />
-              <Stat label="Experience" value={doctor.experience} />
-              <Stat label="Satisfaction" value={doctor.satisfaction} />
-            </dl>
-          </div>
-
-          {/* CTAs */}
-          <div className="flex flex-col gap-2 w-full md:w-48 md:flex-shrink-0">
-            {doctor.hasVideoCall && (
-              <button
-                type="button"
-                className=" max-h-20 bg-[var(--color-maingreen)] hover:bg-[var(--color-maingreen)]/90 text-white text-sm font-semibold rounded-md px-4 py-2.5 transition-colors"
-              >
-                Book Video Call
-              </button>
-            )}
-            <button
-              type="button"
-              className=" max-h-20 bg-[var(--color-darknavy)] hover:bg-[var(--color-brandblue)] text-white text-sm font-semibold rounded-md px-4 py-2.5 transition-colors"
-            >
-              Book Appointment
-            </button>
-          </div>
-        </div>
-
-        {/* Service pills */}
-        {doctor.services.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {doctor.services.map((s) => (
-              <span
-                key={s}
-                className="text-xs px-2.5 py-1 rounded-md bg-[var(--color-skyblue)] text-[var(--color-brandblue)] border border-[var(--color-paleblue)]"
-              >
-                {s}
-              </span>
+          {/* Locations grid */}
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5">
+            {doctor.locations.map((h, i) => (
+              <LocationBox key={i} h={h} onSelect={() => openBooking(h)} />
             ))}
           </div>
-        )}
-
-        {/* Locations grid */}
-        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5">
-          {doctor.locations.map((h, i) => (
-            <LocationBox key={i} h={h} />
-          ))}
         </div>
-      </div>
-    </article>
+      </article>
+
+      <BookAppointmentModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        doctor={doctor}
+        hospital={selectedHospital}
+      />
+    </>
   );
 }
 
@@ -101,11 +145,16 @@ function Stat({ label, value, accent }: { label: string; value: string; accent?:
   );
 }
 
-function LocationBox({ h }: { h: Hospital }) {
+function LocationBox({ h, onSelect }: { h: Hospital; onSelect: () => void }) {
   return (
-    <div
-      className={`rounded-md border-2 px-3 py-2.5 ${h.isVideo ? "border-[var(--color-brandteal)] bg-[var(--color-skyblue)]" : "border-[var(--color-paleblue)] bg-white"
-        }`}
+    <button
+      type="button"
+      onClick={onSelect}
+      className={`rounded-md border-2 px-3 py-2.5 text-left w-full transition-colors hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brandblue)]/40 ${
+        h.isVideo
+          ? "border-[var(--color-brandteal)] bg-[var(--color-skyblue)] hover:bg-[var(--color-skyblue)]/80"
+          : "border-[var(--color-paleblue)] bg-white hover:border-[var(--color-brandblue)]"
+      }`}
     >
       <div className="flex items-start justify-between gap-1">
         <p className={`text-xs font-bold ${h.isVideo ? "text-[var(--color-brandblue)]" : "text-[var(--color-darknavy)]"} flex items-center gap-1`}>
@@ -125,6 +174,6 @@ function LocationBox({ h }: { h: Hospital }) {
           <span className="ml-1.5 text-[10px] font-medium text-[var(--color-mainred)]">• {h.discount}</span>
         )}
       </p>
-    </div>
+    </button>
   );
 }
