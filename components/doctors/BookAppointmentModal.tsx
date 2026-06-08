@@ -149,15 +149,15 @@ export function BookAppointmentModal({
       hospital,
     });
 
-    if (!hospital?.hospitalId) {
-      console.log("BookAppointmentModal: no hospitalId available for video slot fetch", {
-        doctorId: doctor.doctorId,
-        hospital,
-      });
-      setFormError("Video consultation availability is unavailable for this location.");
-      setBookedSlot(null);
-      return;
-    }
+    // if (!hospital?.hospitalId) {
+    //   console.log("BookAppointmentModal: no hospitalId available for video slot fetch", {
+    //     doctorId: doctor.doctorId,
+    //     hospital,
+    //   });
+    //   setFormError("Video consultation availability is unavailable for this location.");
+    //   setBookedSlot(null);
+    //   return;
+    // }
 
     let cancelled = false;
 
