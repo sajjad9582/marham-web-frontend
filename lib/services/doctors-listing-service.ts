@@ -65,7 +65,7 @@ function applyClientFilters(doctors: Doctor[], filters: DoctorsListingFilters): 
   }
 
   if (filters.topReviewed) {
-    result.sort((a, b) => b.rating - a.rating);
+    result = [...result].sort((a, b) => b.rating - a.rating);
   }
 
   return result;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DoctorCard } from "./DoctorCard";
 import type { Doctor } from "@/lib/doctors-data";
 import { fetchDoctorsListing } from "@/lib/services/doctors-listing-service";
@@ -31,6 +31,13 @@ export function DoctorsList({
   const [loading, setLoading] = useState(false);
 
   const hasMore = visible < doctors.length || currentPage < lastPage;
+
+  useEffect(() => {
+    setDoctors(initialDoctors);
+    setVisible(PAGE_SIZE);
+    setCurrentPage(initialMeta.page);
+    setLastPage(initialMeta.lastPage);
+  }, [initialDoctors, initialMeta.page, initialMeta.lastPage, city, speciality, JSON.stringify(filters)]);
 
   const handleLoadMore = async () => {
     if (visible < doctors.length) {
