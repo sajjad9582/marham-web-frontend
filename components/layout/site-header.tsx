@@ -161,18 +161,15 @@ export function SiteHeader() {
         <MarhamLogo width={110} className="sm:hidden" />
         <MarhamLogo width={120} className="hidden sm:block" />
 
-        <nav
-          className="hidden flex-1 items-center justify-center gap-1 xl:flex xl:gap-2"
-          aria-label="Main navigation"
-        >
-          {MAIN_NAV_LINKS.map((item) => (
-            <NavLink key={item.label} item={item} />
-          ))}
-        </nav>
+     <div className="hidden items-center gap-2 xl:flex">
+  <nav className="flex items-center gap-2" aria-label="Main navigation">
+    {MAIN_NAV_LINKS.map((item) => (
+      <NavLink key={item.label} item={item} />
+    ))}
+  </nav>
 
-        <div className="hidden items-center xl:flex">
-          <HeaderActions />
-        </div>
+  <HeaderActions />
+</div>
 
         <div className="flex items-center gap-2 xl:hidden">
           <HeaderActions className="hidden sm:flex" />

@@ -1,79 +1,129 @@
 import { ChevronDownIcon } from "lucide-react";
 
-import { formatSlug } from "@/lib/doctors-data";
-
-export function DoctorsSeoContent({ city, speciality }: { city: string; speciality: string }) {
-  const cityName = formatSlug(city);
-  const specName = formatSlug(speciality);
-  const lowerSpec = specName.toLowerCase();
-
+export function DoctorsSeoContent() {
   return (
-    <section className="bg-white border border-[var(--color-paleblue)] rounded-lg p-5 md:p-7 space-y-6">
-      <Block title={`About ${specName}`}>
+    <section className="bg-white  p-5 md:p-7 space-y-6">
+      <Block title="About Pediatrician">
         <p>
-          Find verified {lowerSpec}s in {cityName} for consultations covering routine
-          check-ups and common childhood concerns such as fever, stomach issues, allergies,
-          nutrition and vaccinations. Book an in-clinic visit or a secure online video
-          consultation with a doctor whose qualifications, experience and reviews suit your
-          needs.
+          Marham enlists the best pediatricians in Lahore to diagnose and treat diseases in children. Book an appointment with the 2026 best child specialist in Lahore to get treatment for issues like Stomach Flu, chickenpox, common colds, childhood diabetes, mumps, and malnutrition.
         </p>
       </Block>
 
-      <Block title={`Who is a ${lowerSpec}?`}>
+      <Block title="Who is a pediatrician?">
         <p>
-          A {lowerSpec} is a child specialist who looks after the health, growth and
-          development of infants, children and adolescents up to 18 years of age. They
-          diagnose and treat illnesses, track developmental milestones, manage chronic
-          conditions and advise families on preventive care.
+          A pediatrician is a child specialist who monitors children's ongoing health, diagnoses diseases and provides the necessary treatments. Pediatric doctors focus on the mental, physical, and behavioral well-being of children up to 18 years of age.
+        </p>
+        <p>
+          Our platform helps you to consult the best pediatrician in Lahore to provide specialized medical care and assistance to the children. You can also consult the child doctor online through Marham to discuss your concerns.
         </p>
       </Block>
 
-      <Block title={`Services offered by a ${lowerSpec}`}>
+      <Block title="What services are offered by a Pediatrician?">
+        <p>
+          A pediatric specialist offers comprehensive services to ensure children's well-being and proper healthcare. These services include:
+        </p>
         <ul className="list-disc pl-5 space-y-1.5">
-          <li><strong>Well-child check-ups:</strong> routine physical exams to monitor growth and development.</li>
-          <li><strong>Vaccinations:</strong> age-appropriate immunisation schedules for newborns and children.</li>
-          <li><strong>Diagnosis & treatment:</strong> care for respiratory, digestive, skin and other common conditions.</li>
-          <li><strong>Chronic illness management:</strong> ongoing care for asthma, diabetes, epilepsy and similar conditions.</li>
-          <li><strong>Developmental screening:</strong> assessment of motor, speech and cognitive milestones.</li>
-          <li><strong>Nutrition guidance:</strong> support with breastfeeding, weaning and feeding difficulties.</li>
-          <li><strong>Behavioural support:</strong> evaluation for ADHD, anxiety and developmental disorders.</li>
-          <li><strong>Emergency care & referrals:</strong> coordinated treatment for urgent and complex needs.</li>
+          <li>
+            <strong>Well-child check-ups: </strong>Regular physical examinations to monitor children's growth, development, and overall health. The pediatrician also guides the parents regarding the effects of breastmilk on children, along with general counseling about the child's health.
+          </li>
+          <li>
+            <strong>Vaccinations: </strong>Consult the best child specialist in Lahore to get a vaccination schedule for your newborns. They guide on administering age-appropriate vaccines to protect children from various diseases.
+          </li>
+          <li>
+            <strong>Diagnosis and treatment:</strong> Expert evaluation, diagnosis, and treatment of common and complex pediatric conditions are also among the major services provided by a pediatrician. The major diseases that a child specialist treats include respiratory infections, gastrointestinal disorders, teeth problems, allergies, skin conditions, and more.
+          </li>
+          <li>
+            <strong>Management of chronic illnesses:</strong> Providing specialized care for children with chronic conditions such as asthma, diabetes, epilepsy, and other long-term health issues.
+          </li>
+          <li>
+            <strong>Developmental screenings:</strong> Assessing developmental milestones and identifying potential delays or concerns in motor skills, speech, language, or cognitive development.
+          </li>
+          <li>
+            <strong>Nutrition guidance: </strong>The pediatrician offers expert advice on proper nutrition, breastfeeding support, the introduction of solid foods, and addressing feeding difficulties.
+          </li>
+          <li>
+            <strong>Behavioral and psychological support: </strong>Evaluating and addressing behavioral and mental health concerns in children, including ADHD, anxiety, depression, and developmental disorders.
+          </li>
+          <li>
+            <strong>Emergency care: </strong>Providing immediate medical attention and treatment for pediatric emergencies, including accidents, injuries, and acute illnesses.
+          </li>
+          <li>
+            <strong>Referrals and coordination of care: </strong>Collaborating with other specialists and healthcare providers as needed and ensuring comprehensive care for children with complex medical needs.
+          </li>
+          <li>
+            <strong>Parental education and counseling</strong>: Offering guidance, support, and education to parents on various aspects of child health, growth, development, preventive care, and parenting strategies.
+          </li>
         </ul>
+        <p>
+          By delivering these services, the child specialist in Lahore ensures that children receive the highest medical care and support for their overall well-being and healthy development.
+        </p>
       </Block>
 
-      <Block title={`Conditions a ${lowerSpec} treats`}>
+      <Block title="What are the conditions that a pediatrician treats?">
+        <p>
+          A child specialist, also known as a pediatrician, diagnose, treat, and manage various diseases and conditions that affect children. Some of the common diseases treated by a child specialist in Lahore include:
+        </p>
         <ul className="list-disc pl-5 space-y-1.5">
-          <li><strong>Respiratory infections</strong> — cold, flu, bronchitis, pneumonia, asthma.</li>
-          <li><strong>Skin conditions</strong> — eczema, rashes, allergies, fungal infections.</li>
-          <li><strong>Urinary tract infections</strong> in children.</li>
-          <li><strong>Childhood diseases</strong> — measles, mumps, chickenpox, hepatitis.</li>
-          <li><strong>Nutritional deficiencies</strong> — anaemia and vitamin deficiencies.</li>
-          <li><strong>Endocrine disorders</strong> — diabetes, growth and thyroid problems.</li>
-          <li><strong>Neurological conditions</strong> — epilepsy, ADHD, developmental delays.</li>
+          <li>
+            <strong>Respiratory infections: </strong>This encompasses common ailments such as the common cold, flu, bronchitis, pneumonia, and asthma. These infections affect the respiratory system of the children.
+          </li>
+          <li>
+            <strong>Skin conditions: </strong>Child specialists manage various dermatological concerns in children. These skin issues include eczema, rashes, allergies, fungal infections, and acne, promoting healthy skin.
+          </li>
+          <li>
+            <strong>Urinary tract infections (UTIs): </strong> The infections affecting the kidneys, bladder, or urethra in children are effectively treated by the pediatrician.
+          </li>
+          <li>
+            <strong>Childhood diseases: </strong>The doctor provides vaccination against preventable diseases in children. These diseases include measles, mumps, rubella, chickenpox, polio, hepatitis, and meningitis.
+          </li>
+          <li>
+            <strong>Nutritional deficiencies: </strong>The doctor address nutritional concerns and deficiencies in children. The common conditions of pediatrician concern include; iron deficiency anemia, vitamin deficiencies, and malnutrition, promoting healthy growth and development.
+          </li>
+          <li>
+            <strong>Endocrine disorders: </strong>Pediatricians diagnose and manage endocrine disorders like diabetes, growth disorders, thyroid disorders, and adrenal gland disorders that can affect a child's hormone balance and overall health.
+          </li>
+          <li>
+            <strong>Childhood cancers: </strong>Pediatric oncologists, who specialize in treating childhood cancers, work closely with child specialists to diagnose and provide appropriate treatment for various types of cancers, such as leukaemia, lymphoma, and brain tumors.
+          </li>
+          <li>
+            <strong>Genetic disorders:</strong> Pediatricians are trained to identify and manage genetic disorders caused by inherited mutations, including conditions like Down syndrome, cystic fibrosis, and sickle cell anemia.
+          </li>
+          <li>
+            <strong>Neurological diseases: </strong>Doctor addresses neurological conditions like epilepsy, cerebral palsy, developmental delays, attention-deficit/hyperactivity disorder (ADHD), and autism spectrum disorders. They also provide specialised care to improve a child's neurological well-being.
+          </li>
+          <li>
+            <strong>Infectious diseases: </strong>Pediatricians diagnose and treat infectious diseases commonly seen in children, including chickenpox, measles, rubella, tuberculosis, meningitis, and hepatitis, safeguarding the health of young patients.
+          </li>
         </ul>
+        <p>
+          A pediatrician is skilled in managing various diseases and conditions that affect children. They provide comprehensive care to ensure the health and well-being of their young patients.
+        </p>
       </Block>
 
-      <Block title="Common childhood illnesses in Pakistan">
-        <div className="overflow-hidden rounded-md border border-[var(--color-paleblue)]">
-          <table className="w-full text-sm">
-            <thead className="bg-[var(--color-mistblue)] text-[var(--color-darknavy)]">
+      <Block title="What are the prevalent childhood illnesses in Pakistan?">
+        <p>
+          Some of the common diseases affecting children in Pakistan are;
+        </p>
+        <div className="overflow-hidden rounded-xs ">
+          <table className="w-full text-sm mt-10">
+            {/* <thead className="bg-[var(--color-mistblue)] text-[var(--color-darknavy)]">
               <tr>
                 <th className="text-left px-3 py-2 font-semibold">Condition</th>
                 <th className="text-right px-3 py-2 font-semibold">Share</th>
               </tr>
-            </thead>
+            </thead> */}
             <tbody>
               {[
                 ["Pneumonia", "63.5%"],
                 ["Meningitis", "20%"],
-                ["Acute Watery Diarrhea", "8.5%"],
+                ["Acute Watery Diarrhea", "8.5 %"],
                 ["Typhoid", "4%"],
                 ["Tuberculosis", "2%"],
                 ["Malaria", "2%"],
-              ].map(([k, v]) => (
-                <tr key={k} className="border-t border-[var(--color-paleblue)]">
-                  <td className="px-3 py-2 text-[var(--color-darknavy)]">{k}</td>
-                  <td className="px-3 py-2 text-right font-medium">{v}</td>
+              ].map(([condition, share]) => (
+                <tr key={condition} className="border-t border-[var(--color-paleblue)]">
+                  <td className="px-3 py-2 text-[var(--color-darknavy)]">{condition}</td>
+                  <td className="px-3 py-2 text-right font-medium">{share}</td>
                 </tr>
               ))}
             </tbody>
@@ -81,92 +131,28 @@ export function DoctorsSeoContent({ city, speciality }: { city: string; speciali
         </div>
       </Block>
 
-      <Block title={`How to book an appointment with a ${lowerSpec} in ${cityName}`}>
+      <Block title="How to book an appointment with a child specialist in Lahore?">
+        <p>
+          To book an appointment with the best child specialist in Lahore, follow the given steps;
+        </p>
         <ol className="list-decimal pl-5 space-y-1.5">
-          <li><strong>Check specialities:</strong> choose a doctor whose area of expertise matches your child's needs.</li>
-          <li><strong>Pick location & fee:</strong> use filters to narrow down by area and consultation fee.</li>
-          <li><strong>Book the appointment:</strong> enter patient name and phone number, then confirm date and time.</li>
-          <li><strong>Attend on time:</strong> arrive at the clinic or join the video consultation at the scheduled slot.</li>
+          <li>
+            <strong>Check specialities:</strong> Pediatricians at Marham have extensive experience and expertise in pediatric medicine. They are professor doctors with FCPS and other post-graduate degrees. Choose a pediatric doctor specialising in the type of treatment you need for your child or infant.
+          </li>
+          <li>
+            <strong>Choose Location and Fee</strong>: Use the filters to choose the location and fee according to your ease. The top pediatricians practice at various locations in Lahore and have affordable fees.
+          </li>
+          <li>
+            <strong> Appointment with a pediatrician: </strong>Book an appointment with the best doctor through Marham. Enter the patient's name and phone number and confirm the appointment date, time, and location with the pediatrician. Marham confirms the appointment with the doctor of your choice and also sends reminders on the appointment day.
+          </li>
+          <li>
+            <strong>Attend the appointment: </strong>Arrive on time on the appointment day. Discuss your concerns and questions with the top pediatric doctor, and follow their instructions regarding any follow-up appointments or treatments.
+          </li>
         </ol>
+        <p>
+          Following these steps, you can consult the best pediatrician in Lahore to cater to your child's healthcare needs. Leave a patient satisfaction score per your experience to help other patients decide about consulting the best doctor.
+        </p>
       </Block>
-
-      <div>
-        <h2 className="text-lg md:text-xl font-bold text-[var(--color-darknavy)] mb-3">
-          Frequently Asked Questions about Best {specName}s in {cityName}
-        </h2>
-        <div>
-          {[
-            {
-              q: `Which symptoms and issues are treated by ${specName}s in ${cityName}?`,
-              a: `${specName} specialists in ${cityName} provide the best services and treat issues like Complete Vaccination, Detailed Newborn Examine, Emergency Treatment, Management Of Pediatric Illness, Nutrition Assessment, Short Stature.`,
-            },
-            {
-              q: `Who is the best ${specName} in ${cityName}?`,
-              a: (
-                <>
-                  <p>Following are the best {specName}s in {cityName}:</p>
-                  <ol className="list-decimal pl-5 mt-2 space-y-1">
-                    <li>Asst. Prof. Dr. Muhammad Zafar Iqbal</li>
-                    <li>Dr. Faiza Kaifee</li>
-                    <li>Prof. Dr. Brig R Lutfullah Goheer</li>
-                    <li>Prof. Dr. Shabir Ahmad</li>
-                    <li>Dr. Muhammad Shoaib Rasool</li>
-                  </ol>
-                </>
-              ),
-            },
-            {
-              q: `How to book an appointment with the best doctor in ${cityName}?`,
-              a: (
-                <>
-                  You can book an appointment online by visiting the doctor&apos;s profile, or call our{" "}
-                  <strong>Marham helpline: 03111222398</strong> to book your appointment.
-                </>
-              ),
-            },
-            {
-              q: `How to choose a best child specialist in ${cityName}?`,
-              a: `You can choose the best child specialist based on their experience, patient reviews, services, qualification, and locations.`,
-            },
-            {
-              q: `How much does a ${specName} cost in ${cityName}?`,
-              a: `The fee of a ${specName} in ${cityName} ranges from PKR 500 to PKR 4000.`,
-            },
-            {
-              q: `Who is the top paediatrician in ${cityName} 2026?`,
-              a: (
-                <>
-                  <p>The following are the top paediatrician in {cityName}:</p>
-                  <ol className="list-decimal pl-5 mt-2 space-y-1">
-                    <li>Asst. Prof. Dr. Binish Ali</li>
-                    <li>Dr. Tariq Rafiq Khan</li>
-                    <li>Prof. Dr. Muhammad Khalid Masood</li>
-                    <li>Prof. Dr. Shabir Ahmad</li>
-                    <li>Prof. Dr. Muhammad Rafique</li>
-                    <li>Dr. Shahzad Khurram</li>
-                    <li>Dr. Shahid Aslam</li>
-                    <li>Dr. Mazhar Abbas Butt</li>
-                    <li>Assoc. Prof. Dr. Muhammad Sajid</li>
-                    <li>Asst. Prof. Dr. Muhammad Zafar Iqbal</li>
-                  </ol>
-                </>
-              ),
-            },
-            {
-              q: `How can I find a ${specName} near me in ${cityName}?`,
-              a: `You can find the best ${specName} near you in ${cityName} using the "Doctors Near Me" filter. It will show you the nearest ${specName}s as per your location.`,
-            },
-          ].map((f, i) => (
-            <details key={i} className="group">
-              <summary className="cursor-pointer list-none bg-[var(--color-washblue)] px-4 py-3 text-sm text-black flex justify-between items-center gap-3 [&::-webkit-details-marker]:hidden">
-                {f.q}
-                <ChevronDownIcon className="size-4 shrink-0 text-black/60 transition-transform duration-200 group-open:rotate-180" />
-              </summary>
-              <div className="bg-white px-4 py-3 text-sm text-black leading-relaxed">{f.a}</div>
-            </details>
-          ))}
-        </div>
-      </div>
     </section>
   );
 }
@@ -174,8 +160,8 @@ export function DoctorsSeoContent({ city, speciality }: { city: string; speciali
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h2 className="text-lg md:text-xl font-bold text-[var(--color-darknavy)] mb-2">{title}</h2>
-      <div className="text-sm text-muted-foreground leading-relaxed space-y-2">{children}</div>
+      <h2 className="text-md md:text-[17px] font-bold text-black mb-3">{title}</h2>
+      <div className="text-sm text-black leading-relaxed space-y-2">{children}</div>
     </div>
   );
 }
