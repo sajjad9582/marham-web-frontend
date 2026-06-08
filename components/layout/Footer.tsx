@@ -29,7 +29,7 @@ export function Footer() {
             ))}
           </ul>
         </nav>
-        <p className="mt-4 text-sm text-[var(--color-darknavy)]/80">
+        <p className="mt-4 text-sm text-black">
           Copyrights @ Marham Inc. All rights reserved since 2016 - {year}
         </p>
       </div>
