@@ -153,7 +153,7 @@ export function BookAppointmentModal({
       setFormError(null);
       setBookedSlot(null);
 
-      const slot = await fetchFirstAvailableSlot(doctor.doctorId, hospital.hospitalId!);
+      const slot = await fetchFirstAvailableSlot(doctor.doctorId, hospital?.hospitalId!);
 
       if (cancelled) return;
 
