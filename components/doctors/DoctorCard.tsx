@@ -101,26 +101,13 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
               </dl>
             </div>
 
-            <div className="flex flex-col gap-2 w-full md:w-48 md:flex-shrink-0">
-              {doctor.hasVideoCall && (
-                <a
-                  href={videoCallUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="max-h-20 bg-[var(--color-maingreen)] hover:bg-[var(--color-maingreen)]/90 text-white text-sm font-semibold rounded-md px-4 py-2.5 transition-colors text-center"
-                >
-                  Book Video Call
-                </a>
-              )}
-              <a
-                href={bookAppointmentUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="max-h-20 bg-[var(--color-darknavy)] hover:bg-[var(--color-brandblue)] text-white text-sm font-semibold rounded-md px-4 py-2.5 transition-colors text-center"
-              >
-                Book Appointment
-              </a>
-            </div>
+            {/* Desktop: actions stay in the top-right column */}
+            <ActionButtons
+              hasVideoCall={doctor.hasVideoCall}
+              videoCallUrl={videoCallUrl}
+              bookAppointmentUrl={bookAppointmentUrl}
+              className="hidden md:flex flex-col gap-2 md:w-48 md:flex-shrink-0"
+            />
           </div>
 
           {doctor.services.length > 0 && (
@@ -136,11 +123,20 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
             </div>
           )}
 
-          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5">
+          {/* Mobile: single horizontal scroll row. Desktop: wrapped grid (unchanged). */}
+          <div className="mt-4 flex overflow-x-auto snap-x gap-2.5 ml-2  px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-3 xl:grid-cols-4">
             {doctor.locations.map((h, i) => (
               <LocationBox key={i} h={h} onSelect={() => openBooking(h)} />
             ))}
           </div>
+
+          {/* Mobile: actions move to the end */}
+          <ActionButtons
+            hasVideoCall={doctor.hasVideoCall}
+            videoCallUrl={videoCallUrl}
+            bookAppointmentUrl={bookAppointmentUrl}
+            className="mt-4 flex flex-col gap-2 md:hidden"
+          />
         </div>
       </article>
 
@@ -151,6 +147,41 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
         hospital={selectedHospital}
       />
     </>
+  );
+}
+
+function ActionButtons({
+  hasVideoCall,
+  videoCallUrl,
+  bookAppointmentUrl,
+  className,
+}: {
+  hasVideoCall: boolean;
+  videoCallUrl: string;
+  bookAppointmentUrl: string;
+  className: string;
+}) {
+  return (
+    <div className={className}>
+      {hasVideoCall && (
+        <a
+          href={videoCallUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="max-h-20 bg-[var(--color-maingreen)] hover:bg-[var(--color-maingreen)]/90 text-white text-sm font-semibold rounded-md px-4 py-2.5 transition-colors text-center"
+        >
+          Book Video Call
+        </a>
+      )}
+      <a
+        href={bookAppointmentUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="max-h-20 bg-[var(--color-darknavy)] hover:bg-[var(--color-brandblue)] text-white text-sm font-semibold rounded-md px-4 py-2.5 transition-colors text-center"
+      >
+        Book Appointment
+      </a>
+    </div>
   );
 }
 
@@ -168,7 +199,7 @@ function LocationBox({ h, onSelect }: { h: Hospital; onSelect: () => void }) {
     <button
       type="button"
       onClick={onSelect}
-      className={`rounded-md border-2 px-3 py-2.5 text-left w-full transition-colors hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brandblue)]/40 ${
+      className={`rounded-md border-2 px-3 py-2.5 text-left w-56 flex-shrink-0 snap-start sm:w-full sm:flex-shrink transition-colors hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brandblue)]/40 ${
         h.isVideo
           ? "border-[var(--color-brandteal)] bg-[var(--color-skyblue)] hover:bg-[var(--color-skyblue)]/80"
           : "border-[var(--color-paleblue)] bg-white hover:border-[var(--color-brandblue)]"
