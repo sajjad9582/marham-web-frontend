@@ -45,6 +45,8 @@ function mapHospital(hospital: ApiHospital, fastConfirm: boolean): Hospital {
     feeAmount: hospital.fee,
     fastConfirm,
     isVideo,
+    doctorHospitalId: hospital.doctorHospitalId,
+    hospitalId: hospital.hospitalId,
     discountPercentage: hospital.discountPercentage,
     ...(hospital.discountPercentage > 0
       ? { discount: `Save ${hospital.discountPercentage}%` }
@@ -75,6 +77,7 @@ function ensureVideoConsultation(
 
   const referenceFee = getLowestFee(apiHospitals);
   const referenceCity = apiHospitals[0]?.hospitalCity ?? pageCitySlug;
+  const videoApiHospital = apiHospitals.find((h) => isVideoHospital(h));
 
   const syntheticVideo: Hospital = {
     name: VIDEO_HOSPITAL_NAME,
@@ -85,6 +88,12 @@ function ensureVideoConsultation(
     feeAmount: referenceFee,
     fastConfirm,
     isVideo: true,
+    ...(videoApiHospital
+      ? {
+          doctorHospitalId: videoApiHospital.doctorHospitalId,
+          hospitalId: videoApiHospital.hospitalId,
+        }
+      : {}),
   };
 
   return sortLocations([syntheticVideo, ...locations]);

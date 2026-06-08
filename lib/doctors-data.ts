@@ -10,6 +10,8 @@ export type Hospital = {
   address?: string;
   city?: string;
   slot?: string;
+  doctorHospitalId?: number;
+  hospitalId?: number;
 };
 
 export type Doctor = {

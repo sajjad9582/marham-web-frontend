@@ -1,4 +1,5 @@
 import { MARHAM_LEGACY_PATHS } from "@/lib/constants/marham-legacy-urls";
+import { ONLINE_CONSULTATION_PROGRAM_ID } from "@/lib/constants/marham-api-endpoints";
 import { doctorNameToSlug, toSlug } from "@/lib/slugify";
 
 const DEFAULT_HOME_URL = "https://www.marham.pk";
@@ -43,6 +44,14 @@ export function buildBookAppointmentUrl(params: DoctorUrlParams): string {
   return `${home}${path}`;
 }
 
+export function buildCallcenterBookingUrl(
+  params: DoctorUrlParams & { hospitalId?: number },
+): string {
+  const url = buildBookAppointmentUrl(params);
+  if (!params.hospitalId) return url;
+  return `${url}?h_id=${params.hospitalId}`;
+}
+
 export function buildCallcenterUrl(params: DoctorUrlParams): string {
   const home = getMarhamHomeUrl();
   const doctorSlug = doctorNameToSlug(params.doctorName);
@@ -55,4 +64,9 @@ export function buildCallcenterUrl(params: DoctorUrlParams): string {
     .replace("{doctorSlug}", doctorSlug);
 
   return `${home}${path}`;
+}
+
+export function buildVideoPaymentUrl(onlineConsultationId: number): string {
+  const home = getMarhamHomeUrl().replace(/\/$/, "");
+  return `${home}/payment/methods/${ONLINE_CONSULTATION_PROGRAM_ID}/${onlineConsultationId}?version=v1`;
 }

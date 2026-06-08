@@ -48,3 +48,50 @@ export type DoctorsListingResponse = {
     meta: DoctorsListingMeta;
   };
 };
+
+export type ValidatePromoCodeResponse = {
+  success: boolean;
+  message: string;
+  data?: {
+    code?: string;
+    discountPercentage?: number;
+    companyName?: string;
+  } | null;
+};
+
+export type DoctorAvailableSlot = {
+  time: string;
+  timeSlot: number;
+  available: boolean;
+};
+
+export type DoctorAvailableSlotsDay = {
+  date: string;
+  dayName: string;
+  slots: DoctorAvailableSlot[];
+};
+
+export type DoctorAvailableSlotsResponse = {
+  success: boolean;
+  message: string;
+  data?: {
+    availableSlots?: DoctorAvailableSlotsDay[];
+    message?: string;
+  } | null;
+};
+
+export type WebBookVideoConsultationResponse = {
+  success: boolean;
+  message: string;
+  data?: {
+    onlineConsultationId: number;
+    programId: number;
+    paymentUrl: string;
+  } | null;
+};
+
+export type BookedVideoSlot = {
+  date: string;
+  time: string;
+  displayTime: string;
+};
