@@ -2,7 +2,7 @@ import { ChevronDownIcon } from "lucide-react";
 
 export function DoctorsSeoContent() {
   return (
-    <section className="bg-white  p-5 md:p-7 space-y-6">
+    <section className="bg-white  mb-10 space-y-6">
       <Block title="About Pediatrician">
         <p>
           Marham enlists the best pediatricians in Lahore to diagnose and treat diseases in children. Book an appointment with the 2026 best child specialist in Lahore to get treatment for issues like Stomach Flu, chickenpox, common colds, childhood diabetes, mumps, and malnutrition.
@@ -152,6 +152,99 @@ export function DoctorsSeoContent() {
         <p>
           Following these steps, you can consult the best pediatrician in Lahore to cater to your child's healthcare needs. Leave a patient satisfaction score per your experience to help other patients decide about consulting the best doctor.
         </p>
+      </Block>
+
+      <Block title="Frequently Asked Questions about Best Pediatricians in Lahore">
+        <div className="space-y-3">
+          <details className="group   bg-slate-50">
+            <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-slate-900">
+              Which symptoms and issues are treated by Pediatricians in Lahore?
+              <ChevronDownIcon className="size-4 shrink-0 text-slate-600 transition-transform duration-200 group-open:rotate-180" />
+            </summary>
+            <div className="bg-white px-4 pb-4 text-sm text-black">
+              Pediatricians specialists in Lahore provide the best services and treat issues like Complete Vaccination, Detailed Newborn Examine, Emergency Treatment, Management Of Pediatric Illness, Nutrition Assessment, Short Stature
+            </div>
+          </details>
+
+          <details className="group  bg-slate-50">
+            <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-slate-900">
+              Who is the best Pediatrician in Lahore?
+              <ChevronDownIcon className="size-4 shrink-0 text-slate-600 transition-transform duration-200 group-open:rotate-180" />
+            </summary>
+            <div className="bg-white px-4 pb-4 text-sm text-black">
+              Following are the best Pediatricians in Lahore:
+              <ol className="list-decimal pl-5 pt-2 space-y-1 text-black">
+                <li>Asst. Prof. Dr. Muhammad Zafar Iqbal</li>
+                <li>Dr. Faiza Kaifee</li>
+                <li>Prof. Dr. Brig R Lutfullah Goheer</li>
+                <li>Prof. Dr. Shabir Ahmad</li>
+                <li>Dr. Fatima Farooq</li>
+              </ol>
+            </div>
+          </details>
+
+          <details className="group  bg-slate-50">
+            <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-slate-900">
+              How to book an appointment with the best doctor in Lahore?
+              <ChevronDownIcon className="size-4 shrink-0 text-slate-600 transition-transform duration-200 group-open:rotate-180" />
+            </summary>
+            <div className="bg-white px-4 pb-4 text-sm text-black">
+              You can book an appointment online by visiting the doctor's profile, or call our <strong>Marham helpline: 03111222398</strong> to book your appointment.
+            </div>
+          </details>
+
+          <details className="group  bg-slate-50">
+            <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-slate-900">
+              How to choose a best child specialist in Lahore?
+              <ChevronDownIcon className="size-4 shrink-0 text-slate-600 transition-transform duration-200 group-open:rotate-180" />
+            </summary>
+            <div className="bg-white px-4 pb-4 text-sm text-black">
+              You can choose the best child specialist based on their <strong>experience</strong>, <strong>patient reviews</strong>, <strong>services</strong>, <strong>qualification</strong>, and <strong>locations</strong>.
+            </div>
+          </details>
+
+          <details className="group  bg-slate-50">
+            <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-slate-900">
+              How much does a Paediatrician cost in Lahore?
+              <ChevronDownIcon className="size-4 shrink-0 text-slate-600 transition-transform duration-200 group-open:rotate-180" />
+            </summary>
+            <div className="bg-white px-4 pb-4 text-sm text-black">
+              The fee of a Paediatrician in Lahore ranges from PKR 500 to PKR 4000.
+            </div>
+          </details>
+
+          <details className="group  bg-slate-50">
+            <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-slate-900">
+              Who is the top paediatrician in Lahore 2026?
+              <ChevronDownIcon className="size-4 shrink-0 text-slate-600 transition-transform duration-200 group-open:rotate-180" />
+            </summary>
+            <div className="bg-white px-4 pb-4 text-sm text-black">
+              The following are the top paediatrician in Lahore:
+              <ol className="list-decimal pl-5 pt-2 space-y-1 text-black">
+                <li>Asst. Prof. Dr. Binish Ali</li>
+                <li>Dr. Tariq Rafiq Khan</li>
+                <li>Prof. Dr. Muhammad Khalid Masood</li>
+                <li>Prof. Dr. Shabir Ahmad</li>
+                <li>Prof. Dr. Muhammad Rafique</li>
+                <li>Dr. Shahzad Khurram</li>
+                <li>Dr. Shahid Aslam</li>
+                <li>Dr. Mazhar Abbas Butt</li>
+                <li>Assoc. Prof. Dr. Muhammad Sajid</li>
+                <li>Asst. Prof. Dr. Muhammad Zafar Iqbal</li>
+              </ol>
+            </div>
+          </details>
+
+          <details className="group  bg-slate-50">
+            <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-slate-900">
+              How can I find a Pediatrician near me in Lahore?
+              <ChevronDownIcon className="size-4 shrink-0 text-slate-600 transition-transform duration-200 group-open:rotate-180" />
+            </summary>
+            <div className="bg-white px-4 pb-4 text-sm text-black">
+              You can find the best Pediatrician near you in Lahore using the "Doctors Near Me" filter. It will show you the nearest Pediatricians as per your location.
+            </div>
+          </details>
+        </div>
       </Block>
     </section>
   );
