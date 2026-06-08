@@ -30,8 +30,8 @@ export const MAIN_NAV_LINKS: NavLinkItem[] = [
       { label: "Pediatrician", href: `${MARHAM_HOME_URL}/doctors/pediatrician` },
       { label: "General Practitioner", href: `${MARHAM_HOME_URL}/doctors/general-practitioner` },
       { label: "Nutritionist", href: `${MARHAM_HOME_URL}/doctors/nutritionist` },
-      { label: "All Specialities", href: `${MARHAM_HOME_URL}/doctors/all-specialities` },
-      { label: "All Diseases", href: `${MARHAM_HOME_URL}/disease` },
+      { label: "All Specialities", href: `${MARHAM_HOME_URL}/doctors/` },
+      { label: "All Diseases", href: `${MARHAM_HOME_URL}/diseases` },
     ],
   },
   {
@@ -72,7 +72,7 @@ export const MAIN_NAV_LINKS: NavLinkItem[] = [
   },
   {
     label: "Health Hub",
-    href: `${MARHAM_HOME_URL}/health-hub`,
+    href: `${MARHAM_HOME_URL}/healthhub`,
   },
   {
     label: "Forum",
@@ -80,7 +80,7 @@ export const MAIN_NAV_LINKS: NavLinkItem[] = [
   },
   {
     label: "Join as Doctor",
-    href: `${MARHAM_HOME_URL}/join-as-doctor`,
+    href: `${MARHAM_HOME_URL}/register/doctor`,
   },
 ]
 

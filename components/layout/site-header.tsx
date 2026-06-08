@@ -83,6 +83,54 @@ function NavLink({ item }: { item: NavLinkItem }) {
   )
 }
 
+function MobileNavItem({ item }: { item: NavLinkItem }) {
+  const [isExpanded, setIsExpanded] = React.useState(false)
+  const hasChildren = item.hasDropdown && !!item.children?.length
+
+  if (hasChildren) {
+    return (
+      <div className="flex flex-col">
+        <button
+          type="button"
+          className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-left text-[15px] text-maingray transition-colors hover:bg-pagegray hover:text-brandblue"
+          aria-expanded={isExpanded}
+          onClick={() => setIsExpanded((open) => !open)}
+        >
+          {item.label}
+          <ChevronDownIcon
+            className={cn(
+              "size-4 opacity-60 transition-transform duration-200",
+              isExpanded && "rotate-180"
+            )}
+          />
+        </button>
+        {isExpanded && (
+          <div className="ml-4 flex flex-col border-l border-lightergray pl-2">
+            {item.children!.map((child) => (
+              <Link
+                key={child.href}
+                href={child.href}
+                className="rounded-md px-3 py-2 text-[14px] text-maingray transition-colors hover:text-brandblue"
+              >
+                {child.label}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <Link
+      href={item.href}
+      className="flex items-center justify-between rounded-md px-3 py-2.5 text-[15px] text-maingray transition-colors hover:bg-pagegray hover:text-brandblue"
+    >
+      {item.label}
+    </Link>
+  )
+}
+
 function HeaderActions({ className }: { className?: string }) {
   return (
     <div className={cn("flex items-center gap-2", className)}>
@@ -114,7 +162,7 @@ export function SiteHeader() {
         <MarhamLogo width={120} className="hidden sm:block" />
 
         <nav
-          className="hidden flex-1 items-center justify-center gap-5 xl:flex xl:gap-6"
+          className="hidden flex-1 items-center justify-center gap-1 xl:flex xl:gap-2"
           aria-label="Main navigation"
         >
           {MAIN_NAV_LINKS.map((item) => (
@@ -149,30 +197,7 @@ export function SiteHeader() {
                 aria-label="Mobile navigation"
               >
                 {MAIN_NAV_LINKS.map((item) => (
-                  <div key={item.label} className="flex flex-col">
-                    <Link
-                      href={item.href}
-                      className="flex items-center justify-between rounded-md px-3 py-2.5 text-[15px] text-maingray transition-colors hover:bg-pagegray hover:text-brandblue"
-                    >
-                      {item.label}
-                      {item.hasDropdown ? (
-                        <ChevronDownIcon className="size-4 opacity-60" />
-                      ) : null}
-                    </Link>
-                    {item.hasDropdown && item.children?.length && (
-                      <div className="ml-4 flex flex-col border-l border-lightergray pl-2">
-                        {item.children.map((child) => (
-                          <Link
-                            key={child.href}
-                            href={child.href}
-                            className="rounded-md px-3 py-2 text-[14px] text-maingray transition-colors hover:text-brandblue"
-                          >
-                            {child.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  <MobileNavItem key={item.label} item={item} />
                 ))}
               </nav>
               <div className="mt-auto flex flex-col gap-2 border-t border-lightergray p-4 sm:hidden bg-white">
