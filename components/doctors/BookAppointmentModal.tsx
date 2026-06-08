@@ -142,10 +142,22 @@ export function BookAppointmentModal({
       return;
     }
 
-    // if (!hospital?.hospitalId) {
-    //   setFormError("Video consultation is not available for this doctor.");
-    //   return;
-    // }
+    console.log("BookAppointmentModal: fetching first available slot", {
+      open,
+      doctorId: doctor.doctorId,
+      hospitalId: hospital?.hospitalId,
+      hospital,
+    });
+
+    if (!hospital?.hospitalId) {
+      console.log("BookAppointmentModal: no hospitalId available for video slot fetch", {
+        doctorId: doctor.doctorId,
+        hospital,
+      });
+      setFormError("Video consultation availability is unavailable for this location.");
+      setBookedSlot(null);
+      return;
+    }
 
     let cancelled = false;
 
@@ -153,14 +165,10 @@ export function BookAppointmentModal({
       setFormError(null);
       setBookedSlot(null);
 
-      const slot = await fetchFirstAvailableSlot(doctor.doctorId, hospital?.hospitalId!);
+      const slot = await fetchFirstAvailableSlot(doctor.doctorId, hospital.hospitalId);
+      console.log("BookAppointmentModal: fetchFirstAvailableSlot response", { slot });
 
       if (cancelled) return;
-
-      // if (!slot) {
-      //   setFormError("No available slots found for video consultation.");
-      //   return;
-      // }
 
       setBookedSlot(slot);
     };
@@ -170,7 +178,7 @@ export function BookAppointmentModal({
     return () => {
       cancelled = true;
     };
-  }, [open, isVideo, hospital?.hospitalId, doctor.doctorId]);
+  }, [open, isVideo, hospital?.hospitalId, doctor.doctorId, hospital]);
 
   if (!hospital) return null;
 

@@ -17,6 +17,11 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
   const [imgError, setImgError] = useState(false);
 
   const openBooking = (hospital: Hospital) => {
+    console.log("DoctorCard: openBooking", {
+      doctorId: doctor.doctorId,
+      specialityId: doctor.specialityId,
+      hospital,
+    });
     setSelectedHospital(hospital);
     setModalOpen(true);
   };
@@ -38,8 +43,8 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
   };
 
   const profileUrl = buildDoctorProfileUrl(urlParams);
-  const videoCallUrl = buildVideoCallUrl(doctor.specialityId, doctor.doctorId);
   const bookAppointmentUrl = buildBookAppointmentUrl(urlParams);
+  const videoCallUrl = buildVideoCallUrl(doctor.specialityId, doctor.doctorId);
 
   const avatar = doctor.profilePic && !imgError ? (
     <Image
@@ -168,7 +173,7 @@ function ActionButtons({
           href={videoCallUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="max-h-20 bg-[var(--color-maingreen)] hover:bg-[var(--color-maingreen)]/90 text-white text-sm font-semibold rounded-sm px-4 py-2.5 transition-colors text-center"
+          className="max-h-20 inline-flex items-center justify-center bg-[var(--color-maingreen)] hover:bg-[var(--color-maingreen)]/90 text-white text-sm font-semibold rounded-sm px-4 py-2.5 transition-colors text-center"
         >
           Book Video Call
         </a>

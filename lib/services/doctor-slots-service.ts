@@ -23,6 +23,7 @@ export async function fetchFirstAvailableSlot(
   }
 
   const json = (await response.json()) as DoctorAvailableSlotsResponse;
+  console.log("Fetched available slots:", json.data);
   const days = json.data?.availableSlots ?? [];
 
   for (const day of days) {

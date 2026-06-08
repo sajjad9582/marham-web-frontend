@@ -101,8 +101,7 @@ export async function fetchDoctorsListing(
     }
 
     const json = (await response.json()) as DoctorsListingResponse;
-    console.log("Doctors listing API response:", json?.data?.doctors?.length ?? 0, "doctors, meta:", json.data);
-
+    
     if (!json.success || !json.data?.doctors) {
       console.error("Doctors listing API returned unsuccessful response:", json.message);
       return { doctors: [], meta: json.data?.meta ?? EMPTY_META };
