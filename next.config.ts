@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "staticdev.marham.pk",
       },
+      {
+        protocol: "https",
+        hostname: "staticconnectdev.marham.pk",
+      },
     ],
   },
   allowedDevOrigins: ['10.1.2.205']

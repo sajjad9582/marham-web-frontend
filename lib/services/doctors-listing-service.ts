@@ -104,7 +104,12 @@ export async function fetchDoctorsListing(
     }
 
     const json = (await response.json()) as DoctorsListingResponse;
-    
+    // console.log(json.data?.doctors);
+    // json.data?.doctors?.forEach((doctor) => {
+    //   console.log(`\n--- ${doctor.name} (${doctor.doctorId}) ---`);
+    //   console.dir(doctor.hospitals, { depth: null });
+    // });
+
     if (!json.success || !json.data?.doctors) {
       console.error("Doctors listing API returned unsuccessful response:", json.message);
       return { doctors: [], meta: json.data?.meta ?? EMPTY_META };

@@ -1,5 +1,6 @@
 # dependencies
 /node_modules
+/.doc/
 /.pnp
 .pnp.*
 .yarn/*
@@ -21,6 +22,8 @@
 # misc
 .DS_Store
 *.pem
+.doc
+
 
 # debug
 npm-debug.log*
