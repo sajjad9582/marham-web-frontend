@@ -6,8 +6,8 @@ import { Doctor, Hospital } from "@/lib/doctors-data";
 import {
   buildBookAppointmentUrl,
   buildDoctorProfileUrl,
-  buildVideoCallUrl,
 } from "@/lib/doctors-urls";
+import { getVideoLocation } from "@/lib/get-video-location";
 import { CheckCircle2, Video } from "lucide-react";
 import { BookAppointmentModal } from "./BookAppointmentModal";
 
@@ -44,7 +44,12 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
 
   const profileUrl = buildDoctorProfileUrl(urlParams);
   const bookAppointmentUrl = buildBookAppointmentUrl(urlParams);
-  const videoCallUrl = buildVideoCallUrl(doctor.specialityId, doctor.doctorId);
+  const videoLocation = getVideoLocation(doctor);
+
+  const openVideoBooking = () => {
+    if (!videoLocation) return;
+    openBooking(videoLocation);
+  };
 
   const avatar = doctor.profilePic && !imgError ? (
     <Image
@@ -109,7 +114,7 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
             {/* Desktop: actions stay in the top-right column */}
             <ActionButtons
               hasVideoCall={doctor.hasVideoCall}
-              videoCallUrl={videoCallUrl}
+              onVideoCallClick={openVideoBooking}
               bookAppointmentUrl={bookAppointmentUrl}
               className="hidden md:flex flex-col gap-2 md:w-64 md:flex-shrink-0"
             />
@@ -138,7 +143,7 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
           {/* Mobile: actions move to the end */}
           <ActionButtons
             hasVideoCall={doctor.hasVideoCall}
-            videoCallUrl={videoCallUrl}
+            onVideoCallClick={openVideoBooking}
             bookAppointmentUrl={bookAppointmentUrl}
             className="mt-4 flex flex-col gap-2 md:hidden"
           />
@@ -157,26 +162,25 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
 
 function ActionButtons({
   hasVideoCall,
-  videoCallUrl,
+  onVideoCallClick,
   bookAppointmentUrl,
   className,
 }: {
   hasVideoCall: boolean;
-  videoCallUrl: string;
+  onVideoCallClick: () => void;
   bookAppointmentUrl: string;
   className: string;
 }) {
   return (
     <div className={className}>
       {hasVideoCall && (
-        <a
-          href={videoCallUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
+          onClick={onVideoCallClick}
           className="max-h-20 inline-flex items-center justify-center bg-[var(--color-maingreen)] hover:bg-[var(--color-maingreen)]/90 text-white text-sm font-semibold rounded-sm px-4 py-2.5 transition-colors text-center"
         >
           Book Video Call
-        </a>
+        </button>
       )}
       <a
         href={bookAppointmentUrl}

@@ -20,7 +20,11 @@ function formatFee(fee: number): string {
 }
 
 function isVideoHospital(hospital: ApiHospital): boolean {
-  return hospital.hospitalType === 2 || hospital.hospitalName === VIDEO_HOSPITAL_NAME;
+  const normalizedName = hospital.hospitalName?.trim().toLowerCase();
+  return (
+    hospital.hospitalType === 2 ||
+    normalizedName === VIDEO_HOSPITAL_NAME.toLowerCase()
+  );
 }
 
 function mapHospital(hospital: ApiHospital, fastConfirm: boolean): Hospital {
@@ -72,31 +76,37 @@ function ensureVideoConsultation(
   fastConfirm: boolean,
 ): Hospital[] {
   if (locations.some((l) => l.isVideo)) {
+    return sortLocations(locations);
+  }
+
+  if (apiHospitals.length === 0) {
     return locations;
   }
 
-  const referenceFee = getLowestFee(apiHospitals);
-  const referenceCity = apiHospitals[0]?.hospitalCity ?? pageCitySlug;
   const videoApiHospital = apiHospitals.find((h) => isVideoHospital(h));
-
-  if (!videoApiHospital) {
-    return locations;
-  }
+  const referenceHospital = videoApiHospital ?? apiHospitals[0];
+  const referenceFee = videoApiHospital?.fee ?? getLowestFee(apiHospitals);
+  const referenceCity =
+    videoApiHospital?.hospitalCity ??
+    apiHospitals[0]?.hospitalCity ??
+    pageCitySlug;
 
   const syntheticVideo: Hospital = {
     name: VIDEO_HOSPITAL_NAME,
     address: "Online appointment",
     city: referenceCity,
     availability: AVAILABILITY_FALLBACK,
-    fee: formatFee(videoApiHospital.fee || referenceFee),
-    feeAmount: videoApiHospital.fee || referenceFee,
+    fee: formatFee(referenceFee),
+    feeAmount: referenceFee,
     fastConfirm,
     isVideo: true,
-    doctorHospitalId: videoApiHospital.doctorHospitalId,
-    hospitalId: videoApiHospital.hospitalId,
-    discountPercentage: videoApiHospital.discountPercentage,
-    ...(videoApiHospital.discountPercentage > 0
-      ? { discount: `Save ${videoApiHospital.discountPercentage}%` }
+    doctorHospitalId: videoApiHospital?.doctorHospitalId ?? referenceHospital.doctorHospitalId,
+    hospitalId: videoApiHospital?.hospitalId ?? referenceHospital.hospitalId,
+    discountPercentage: videoApiHospital?.discountPercentage ?? referenceHospital.discountPercentage,
+    ...((videoApiHospital?.discountPercentage ?? referenceHospital.discountPercentage) > 0
+      ? {
+          discount: `Save ${videoApiHospital?.discountPercentage ?? referenceHospital.discountPercentage}%`,
+        }
       : {}),
   };
 

@@ -1,4 +1,5 @@
 import type { Doctor } from "@/lib/doctors-data";
+import { formatSlug } from "@/lib/doctors-data";
 import { MARHAM_API_ENDPOINTS } from "@/lib/constants/marham-api-endpoints";
 import { mapApiDoctors } from "@/lib/map-doctors-response";
 import type { DoctorsListingFilters } from "@/lib/types/doctors-listing-filters";
@@ -14,7 +15,7 @@ function buildListingQueryParams(filters: DoctorsListingFilters): URLSearchParam
   const params = new URLSearchParams();
 
   if (filters.specialityId) params.set("specialityId", String(filters.specialityId));
-  if (filters.city) params.set("city", filters.city);
+  if (filters.city) params.set("city", formatSlug(filters.city));
   if (filters.page) params.set("page", String(filters.page));
   if (filters.minFee !== undefined) params.set("minFee", String(filters.minFee));
   if (filters.maxFee !== undefined) params.set("maxFee", String(filters.maxFee));
