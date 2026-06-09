@@ -2,7 +2,7 @@
 
 import * as Dialog from "@radix-ui/react-dialog";
 import { CheckCircle2, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Doctor, Hospital } from "@/lib/doctors-data";
 import { buildCallcenterBookingUrl, buildCallcenterUrl, buildVideoPaymentUrl } from "@/lib/doctors-urls";
 import {
@@ -13,11 +13,8 @@ import {
 } from "@/lib/marham-api";
 import { formatBookedSlotDisplay, parseDisplayTimeTo24Hour } from "@/lib/format-appointment-slot";
 import type { BookedVideoSlot } from "@/lib/types/marham-api";
-import {
-  toE164PakistanPhone,
-  validatePakistanPhone,
-} from "@/lib/validate-pakistan-phone";
 import { cn } from "@/lib/utils";
+import { IntlPhoneInput, type IntlPhoneInputHandle } from "./intl-phone-input";
 
 type LocationDetails = {
   hospitalName: string;
@@ -93,7 +90,6 @@ function pickFirstAvailableSlot(
 }
 
 function resetModalFormState(setters: {
-  setPhone: (value: string) => void;
   setPatientName: (value: string) => void;
   setPromoCode: (value: string) => void;
   setFormError: (value: string | null) => void;
@@ -104,7 +100,6 @@ function resetModalFormState(setters: {
   setResolvedHospitalId: (value: number | undefined) => void;
   setResolvedDoctorHospitalId: (value: number | undefined) => void;
 }) {
-  setters.setPhone("");
   setters.setPatientName("");
   setters.setPromoCode("");
   setters.setFormError(null);
@@ -129,7 +124,7 @@ export function BookAppointmentModal({
   doctor,
   hospital,
 }: BookAppointmentModalProps) {
-  const [phone, setPhone] = useState("");
+  const phoneInputRef = useRef<IntlPhoneInputHandle>(null);
   const [patientName, setPatientName] = useState("");
   const [promoCode, setPromoCode] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
@@ -220,8 +215,8 @@ export function BookAppointmentModal({
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
+      phoneInputRef.current?.reset();
       resetModalFormState({
-        setPhone,
         setPatientName,
         setPromoCode,
         setFormError,
@@ -246,9 +241,9 @@ export function BookAppointmentModal({
         return;
       }
 
-      const phoneValidation = validatePakistanPhone(phone);
-      if (!phoneValidation.valid || !phoneValidation.normalized) {
-        setFormError(phoneValidation.error ?? "Phone Number is Invalid!");
+      const patientPhone = phoneInputRef.current?.getE164Number();
+      if (!patientPhone) {
+        setFormError("Phone Number is Invalid!");
         return;
       }
 
@@ -278,7 +273,7 @@ export function BookAppointmentModal({
           doctorHospitalId: resolvedDoctorHospitalId ?? hospital.doctorHospitalId,
           date: bookedSlot.date,
           time: bookedSlot.time,
-          patientPhone: toE164PakistanPhone(phoneValidation.normalized),
+          patientPhone,
           patientName: patientName.trim(),
           promoCode: promoCode.trim() || undefined,
         });
@@ -312,16 +307,27 @@ export function BookAppointmentModal({
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <Dialog.Content
+          onInteractOutside={(event) => {
+            const target = event.target;
+            if (
+              target instanceof Element &&
+              target.closest(
+                ".iti__country-selector, .iti__country-list, .iti__search-input, .iti--detached-country-selector",
+              )
+            ) {
+              event.preventDefault();
+            }
+          }}
           className={cn(
-            "fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2",
+            "fixed left-1/2 top-1/2 z-50 flex w-[calc(100%-2rem)] max-w-xl max-h-[91vh] flex-col -translate-x-1/2 -translate-y-1/2",
             "rounded-lg border border-[var(--color-paleblue)] bg-white p-5 shadow-xl",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
             "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
-            "focus:outline-none max-h-[91vh] overflow-y-auto"
+            "focus:outline-none overflow-hidden"
           )}
         >
-          <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="flex shrink-0 items-start justify-between gap-3 mb-4">
             <Dialog.Title className="text-lg font-bold text-[var(--color-darknavy)]">
               Book Appointment Now
             </Dialog.Title>
@@ -334,7 +340,7 @@ export function BookAppointmentModal({
             </Dialog.Close>
           </div>
 
-          <div className="rounded-md border border-[var(--color-paleblue)] bg-[var(--color-frostblue)] p-3.5 space-y-2">
+          <div className="min-h-0 flex-1 overflow-y-auto rounded-md border border-[var(--color-paleblue)] bg-[var(--color-frostblue)] p-3.5 space-y-2">
           
            
             {isVideo ? (
@@ -397,7 +403,7 @@ export function BookAppointmentModal({
             )}
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+          <form onSubmit={handleSubmit} className="relative z-20 mt-4 shrink-0 space-y-3 overflow-visible">
             {formError && (
               <div
                 className="rounded-md border border-[var(--color-mainred)]/30 bg-[#fde8e8] px-3 py-2.5 text-sm text-[var(--color-darknavy)]"
@@ -407,18 +413,11 @@ export function BookAppointmentModal({
               </div>
             )}
 
-            <div className="flex rounded-md border border-[var(--color-paleblue)] overflow-hidden focus-within:ring-2 focus-within:ring-[var(--color-brandblue)]/30">
-              <div className="flex items-center gap-1.5 border-r border-[var(--color-paleblue)] bg-[var(--color-skyblue)] px-2.5 text-sm text-[var(--color-darknavy)] shrink-0">
-                <span aria-hidden>🇵🇰</span>
-                <span className="font-medium">+92</span>
-              </div>
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+            <div className="relative overflow-visible">
+              <IntlPhoneInput
+                ref={phoneInputRef}
                 placeholder="Add Phone Number"
-                className="flex-1 bg-transparent px-3 py-2.5 text-sm text-[var(--color-darknavy)] outline-none placeholder:text-muted-foreground"
-                autoComplete="tel"
+                className="marham-intl-phone"
               />
             </div>
 
