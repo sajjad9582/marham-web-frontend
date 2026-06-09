@@ -13,15 +13,16 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-[var(--color-paleblue)] border-t border-[var(--color-mistblue)] mt-2 ">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 ">
+    <footer className="bg-[var(--color-base)] border-t
+     border-[var(--color-mistblue)] mt-2 ">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 ">
         <nav aria-label="Footer">
           <ul className="flex flex-wrap items-center gap-x-8 gap-y-3 ">
             {FOOTER_LINKS.map((l) => (
               <li key={l.label}>
                 <Link
                   href={l.href}
-                  className="text-sm font-medium text-[var(--color-brandblue)] hover:text-[var(--color-darknavy)] transition-colors"
+                  className="text-[13px]] font-medium text-[var(--color-brandblue)] hover:text-[var(--color-darknavy)] transition-colors"
                 >
                   {l.label}
                 </Link>

@@ -72,21 +72,36 @@ export function DoctorsList({
   };
 
   const visibleDoctors = doctors.slice(0, visible);
-
   const listingItems = visibleDoctors.flatMap((doctor, index) => {
     const items = [<DoctorCard key={doctor.id} doctor={doctor} />];
-
-    if (showOnlineSlider && (index + 1) % ONLINE_SLIDER_INTERVAL === 0) {
+  
+    // Insert slider once after the 5th doctor
+    if (showOnlineSlider && index === 4) {
       items.push(
         <OnlineDoctorsSlider
-          key={`online-doctors-after-${doctor.id}`}
+          key="online-doctors-slider"
           doctors={onlineDoctors}
         />,
       );
     }
-
+  
     return items;
   });
+
+  // const listingItems = visibleDoctors.flatMap((doctor, index) => {
+  //   const items = [<DoctorCard key={doctor.id} doctor={doctor} />];
+
+  //   if (showOnlineSlider && (index + 1) % ONLINE_SLIDER_INTERVAL === 0) {
+  //     items.push(
+  //       <OnlineDoctorsSlider
+  //         key={`online-doctors-after-${doctor.id}`}
+  //         doctors={onlineDoctors}
+  //       />,
+  //     );
+  //   }
+
+  //   return items;
+  // });
 
   return (
     <div className="space-y-4">

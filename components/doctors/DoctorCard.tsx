@@ -81,12 +81,11 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
             </div>
 
             <div className="flex-1 min-w-0">
-              <h3 itemProp="name" className="text-base md:text-lg font-bold text-[var(--color-darknavy)] flex items-center gap-1.5">
+              <h3 itemProp="name" className="text-base md:text-lg font-bold text-black flex items-center gap-1.5">
                 <a
                   href={profileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:underline"
                 >
                   {doctor.name}
                 </a>
@@ -117,11 +116,11 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
           </div>
 
           {doctor.services.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-4 flex gap-2 overflow-x-auto snap-x px-2 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible">
               {doctor.services.map((s) => (
                 <span
                   key={s}
-                  className="text-xs px-2.5 py-1 rounded-md bg-[var(--color-skyblue)] text-[var(--color-brandblue)] border border-[var(--color-paleblue)]"
+                  className="text-xs px-2.5 py-1 rounded-md bg-[var(--color-skyblue)] text-[var(--color-brandblue)] border border-[var(--color-paleblue)] whitespace-nowrap shrink-0 snap-start"
                 >
                   {s}
                 </span>

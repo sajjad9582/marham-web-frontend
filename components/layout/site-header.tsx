@@ -29,7 +29,7 @@ import {
 import { cn } from "@/lib/utils"
 
 const navLinkClass =
-  "inline-flex items-center gap-0.5 text-[15px] font-normal text-maingray transition-colors hover:bg-deepblue rounded-sm px-2 py-1 hover:text-white"
+  "inline-flex items-center gap-0.5 text-[15px] font-normal text-brandblue transition-colors hover:bg-deepblue rounded-sm px-2 py-1 hover:text-white"
 
 function NavLink({ item }: { item: NavLinkItem }) {
   const [isOpen, setIsOpen] = React.useState(false)
@@ -92,7 +92,7 @@ function MobileNavItem({ item }: { item: NavLinkItem }) {
       <div className="flex flex-col">
         <button
           type="button"
-          className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-left text-[15px] text-maingray transition-colors hover:bg-pagegray hover:text-brandblue"
+          className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-left text-[15px] text-brandblue transition-colors hover:bg-pagegray hover:text-brandblue"
           aria-expanded={isExpanded}
           onClick={() => setIsExpanded((open) => !open)}
         >
@@ -110,7 +110,7 @@ function MobileNavItem({ item }: { item: NavLinkItem }) {
               <Link
                 key={child.href}
                 href={child.href}
-                className="rounded-md px-3 py-2 text-[14px] text-maingray transition-colors hover:text-brandblue"
+                className="rounded-md px-3 py-2 text-[14px] text-brandblue transition-colors hover:text-brandblue"
               >
                 {child.label}
               </Link>
@@ -124,7 +124,7 @@ function MobileNavItem({ item }: { item: NavLinkItem }) {
   return (
     <Link
       href={item.href}
-      className="flex items-center justify-between rounded-md px-3 py-2.5 text-[15px] text-maingray transition-colors hover:bg-pagegray hover:text-brandblue"
+      className="flex items-center justify-between rounded-md px-3 py-2.5 text-[15px] text-brandblue transition-colors hover:bg-pagegray hover:text-brandblue"
     >
       {item.label}
     </Link>

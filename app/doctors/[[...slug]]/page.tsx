@@ -76,7 +76,7 @@ export default async function SpecialitiesPage({ params, searchParams }: PagePro
           <DoctorsFilterChips city={city} speciality={speciality} />
         </Suspense>
         <DoctorsList doctors={doctors} meta={meta} city={city} speciality={speciality} filters={filters} />
-        <DoctorsSeoContent city={city} speciality={speciality} />
+        <DoctorsSeoContent  />
         <DoctorsRelatedLinks city={city} speciality={speciality} />
       </div>
     </main>
