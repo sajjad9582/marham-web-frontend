@@ -141,7 +141,7 @@ export function DoctorsFilterChips({ city, speciality }: DoctorsFilterChipsProps
   };
 
   const chipClass = (active: boolean) =>
-    `text-xs md:text-sm px-3 py-1.5 rounded-md border font-medium transition-colors whitespace-nowrap ${
+    `text-[11px] md:text-sm px-2 py-1 md:px-3 md:py-1.5 rounded-md border font-medium transition-colors whitespace-nowrap ${
       active
         ? "border-[var(--color-brandblue)] bg-[var(--color-brandblue)] text-white"
         : "border-[var(--color-paleblue)] bg-[var(--color-mistblue)] text-[var(--color-brandblue)] hover:bg-[var(--color-paleblue)]"
@@ -233,11 +233,11 @@ export function DoctorsFilterChips({ city, speciality }: DoctorsFilterChipsProps
 
   return (
     <>
-      <div className="relative z-10 bg-white border border-[var(--color-paleblue)] rounded-md p-2 flex items-center gap-1">
+      <div className="relative z-10 bg-white border border-[var(--color-paleblue)] rounded-md p-1 md:p-2 flex items-center gap-0.5 md:gap-1">
         <button
           type="button"
           onClick={() => scroll("left")}
-          className="relative z-30 shrink-0 h-8 w-8 flex items-center justify-center rounded-full border border-[var(--color-paleblue)] bg-[var(--color-mistblue)] text-[var(--color-brandblue)] hover:bg-[var(--color-paleblue)] transition-colors"
+          className="relative z-30 shrink-0 h-7 w-7 md:h-8 md:w-8 flex items-center justify-center rounded-full border border-[var(--color-paleblue)] bg-[var(--color-mistblue)] text-[var(--color-brandblue)] hover:bg-[var(--color-paleblue)] transition-colors"
           aria-label="Scroll filters left"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -305,7 +305,7 @@ export function DoctorsFilterChips({ city, speciality }: DoctorsFilterChipsProps
         <button
           type="button"
           onClick={() => scroll("right")}
-          className="relative z-30 shrink-0 h-8 w-8 flex items-center justify-center rounded-full border border-[var(--color-paleblue)] bg-[var(--color-mistblue)] text-[var(--color-brandblue)] hover:bg-[var(--color-paleblue)] transition-colors"
+          className="relative z-30 shrink-0 h-7 w-7 md:h-8 md:w-8 flex items-center justify-center rounded-full border border-[var(--color-paleblue)] bg-[var(--color-mistblue)] text-[var(--color-brandblue)] hover:bg-[var(--color-paleblue)] transition-colors"
           aria-label="Scroll filters right"
         >
           <ChevronRight className="h-4 w-4" />

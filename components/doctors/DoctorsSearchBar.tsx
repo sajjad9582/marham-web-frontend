@@ -71,11 +71,14 @@ export function DoctorsSearchBar({ city, speciality }: { city: string; specialit
     window.location.href = buildLegacyDiseaseCityUrl(suggestion.meta.slug, citySlug);
   };
 
+  const mobileInputClass =
+    "text-xs md:text-sm py-1 md:py-2 placeholder:text-[11px] md:placeholder:text-sm placeholder:text-[var(--color-steelblue)] placeholder:font-normal";
+
   return (
     <form
       role="search"
       onSubmit={handleSubmit}
-      className="bg-white border border-[var(--color-paleblue)] rounded-md p-2 flex items-stretch gap-2"
+      className="bg-white md:border border-[var(--color-paleblue)] rounded-md p-0.5 md:p-2 flex items-stretch gap-0.5 md:gap-2"
     >
       <SearchAutocomplete
         value={cityInput}
@@ -83,24 +86,28 @@ export function DoctorsSearchBar({ city, speciality }: { city: string; specialit
         suggestions={citySuggestions}
         placeholder="Enter City"
         ariaLabel="City"
-        leadingIcon={<MapPin className="h-4 w-4 shrink-0 text-[var(--color-brandblue)]" aria-hidden />}
+        leadingIcon={<MapPin className="h-3.5 w-3.5 md:h-4 md:w-4 shrink-0 text-[var(--color-brandblue)]" aria-hidden />}
+        inputClassName={mobileInputClass}
+        fieldClassName="px-2 md:px-3"
       />
       <SearchAutocomplete
         value={specialityInput}
         onChange={setSpecialityInput}
         onSelect={handleDoctorSelect}
         suggestions={doctorSuggestions}
-        placeholder="Search by Doctors"
+        placeholder="Search by speciality"
         ariaLabel="Search doctors"
-        leadingIcon={<Search className="h-4 w-4 shrink-0 text-[var(--color-brandblue)]" aria-hidden />}
+        leadingIcon={<Search className="h-3.5 w-3.5 md:h-4 md:w-4 shrink-0 text-[var(--color-brandblue)]" aria-hidden />}
         containerClassName="flex-[2]"
+        inputClassName={mobileInputClass}
+        fieldClassName="px-2 md:px-3"
       />
       <button
         type="submit"
         aria-label="Search"
-        className="bg-[var(--color-brandblue)] hover:bg-[var(--color-darknavy)] text-white rounded-md px-5 transition-colors flex items-center justify-center"
+        className="bg-[var(--color-brandblue)] hover:bg-[var(--color-darknavy)] text-white rounded-md px-3 md:px-5 transition-colors flex items-center justify-center shrink-0"
       >
-        <Search className="h-4 w-4" />
+        <Search className="h-3.5 w-3.5 md:h-4 md:w-4" />
       </button>
     </form>
   );

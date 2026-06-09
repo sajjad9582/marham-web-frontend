@@ -53,12 +53,12 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
       alt={doctor.name}
       width={96}
       height={96}
-      className="h-20 w-20 md:h-24 md:w-24 rounded-full object-cover ring-4 ring-[var(--color-paleblue)]"
+      className="h-16 w-16 md:h-24 md:w-24 rounded-full object-cover ring-2 md:ring-4 ring-[var(--color-paleblue)]"
       onError={() => setImgError(true)}
     />
   ) : (
     <div
-      className="h-20 w-20 md:h-24 md:w-24 rounded-full bg-gradient-to-br from-[var(--color-brandteal)] to-[var(--color-brandblue)] text-white flex items-center justify-center text-xl font-bold ring-4 ring-[var(--color-paleblue)]"
+      className="h-16 w-16 md:h-24 md:w-24 rounded-full bg-gradient-to-br from-[var(--color-brandteal)] to-[var(--color-brandblue)] text-white flex items-center justify-center text-lg md:text-xl font-bold ring-2 md:ring-4 ring-[var(--color-paleblue)]"
       aria-hidden
     >
       {initials}
@@ -72,8 +72,8 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
         itemType="https://schema.org/Physician"
         className="bg-white border border-[var(--color-paleblue)] rounded-lg overflow-hidden hover:shadow-md transition-shadow"
       >
-        <div className="p-4 md:p-5">
-          <div className="flex flex-col md:flex-row gap-4">
+        <div className="p-3 md:p-5">
+          <div className="flex gap-3 md:gap-4">
             <div className="flex-shrink-0">
               <a href={profileUrl} target="_blank" rel="noopener noreferrer">
                 {avatar}
@@ -81,25 +81,26 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
             </div>
 
             <div className="flex-1 min-w-0">
-              <h3 itemProp="name" className="text-base md:text-lg font-bold text-black flex items-center gap-1.5">
+              <h3 itemProp="name" className="text-sm leading-snug md:text-lg font-bold text-black flex items-start gap-1">
                 <a
                   href={profileUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="line-clamp-2 md:line-clamp-none"
                 >
                   {doctor.name}
                 </a>
                 {doctor.isPmc && (
-                  <CheckCircle2 className="h-4 w-4 text-[var(--color-maingreen)] fill-[var(--color-maingreen)] text-white flex-shrink-0" aria-label="Verified" />
+                  <CheckCircle2 className="h-3.5 w-3.5 md:h-4 md:w-4 mt-0.5 text-[var(--color-maingreen)] fill-[var(--color-maingreen)] text-white flex-shrink-0" aria-label="Verified" />
                 )}
               </h3>
               {doctor.isPmc && (
-                <p className="text-xs md:text-sm font-semibold text-[var(--color-maingreen)] mt-0.5">PMDC Verified</p>
+                <p className="text-[11px] md:text-sm font-semibold text-[var(--color-maingreen)] mt-0.5">PMDC Verified</p>
               )}
-              <p itemProp="medicalSpecialty" className="text-sm text-[var(--color-darknavy)] mt-1.5">{doctor.specialty}</p>
-              <p className="text-xs md:text-sm text-muted-foreground mt-0.5">{doctor.qualifications}</p>
+              <p itemProp="medicalSpecialty" className="text-xs md:text-sm text-[var(--color-darknavy)] mt-1">{doctor.specialty}</p>
+              <p className="text-[11px] md:text-sm text-muted-foreground mt-0.5 line-clamp-1 md:line-clamp-none">{doctor.qualifications}</p>
 
-              <dl className="mt-3 grid grid-cols-3 gap-2 max-w-md">
+              <dl className="mt-2 md:mt-3 grid grid-cols-3 gap-2 max-w-md">
                 <Stat label="Reviews" value={doctor.reviews.toString()} accent />
                 <Stat label="Experience" value={doctor.experience} />
                 <Stat label="Satisfaction" value={doctor.satisfaction} />

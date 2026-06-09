@@ -104,7 +104,7 @@ export function DoctorsList({
   // });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2 md:space-y-4">
       {listingItems}
       {hasMore && (
         <div className="flex justify-center pt-2">

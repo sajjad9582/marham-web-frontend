@@ -22,7 +22,10 @@ export function Footer() {
               <li key={l.label}>
                 <Link
                   href={l.href}
-                  className="text-[13px]] font-medium text-[var(--color-brandblue)] hover:text-[var(--color-darknavy)] transition-colors"
+                  className="text-[13px] font-medium
+                   text-[var(--color-brandblue)] 
+                   hover:text-[var(--color-darknavy)] 
+                   transition-colors"
                 >
                   {l.label}
                 </Link>

@@ -22,6 +22,7 @@ type SearchAutocompleteProps = {
   leadingIcon?: ReactNode;
   containerClassName?: string;
   inputClassName?: string;
+  fieldClassName?: string;
 };
 
 function filterSuggestions(suggestions: SearchSuggestion[], query: string): SearchSuggestion[] {
@@ -46,6 +47,7 @@ export function SearchAutocomplete({
   leadingIcon,
   containerClassName,
   inputClassName,
+  fieldClassName,
 }: SearchAutocompleteProps) {
   const listId = useId();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -116,8 +118,9 @@ export function SearchAutocomplete({
     <div ref={containerRef} className={cn("relative flex-1 min-w-0", containerClassName)}>
       <div
         className={cn(
-          "flex items-center gap-2 border border-[var(--color-paleblue)] rounded-md px-3 transition-shadow",
+          "flex items-center gap-1 md:gap-2 border border-[var(--color-paleblue)] rounded-sm px-0.5 md:px-3 transition-shadow",
           showSuggestions && "border-[var(--color-brandblue)] ring-2 ring-[var(--color-brandblue)]/30",
+          fieldClassName,
         )}
       >
         {leadingIcon}
