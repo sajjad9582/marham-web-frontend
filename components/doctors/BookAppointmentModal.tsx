@@ -354,11 +354,11 @@ export function BookAppointmentModal({
             {address && (
               <p className="text-xs text-muted-foreground">{address}</p>
             )}
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[var(--color-darknavy)]">
-              <span className="font-semibold">{slot}</span>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-black">
+              <span className="">{slot}</span>
               {!isVideo && (
                 <>
-                  <span className="text-[var(--color-paleblue)]" aria-hidden>
+                  <span className="" aria-hidden>
                     |
                   </span>
                   <a
