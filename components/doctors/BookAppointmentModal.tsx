@@ -7,10 +7,11 @@ import type { Doctor, Hospital } from "@/lib/doctors-data";
 import { buildCallcenterBookingUrl, buildCallcenterUrl, buildVideoPaymentUrl } from "@/lib/doctors-urls";
 import {
   bookVideoConsultation,
-  fetchFirstAvailableSlot,
+  fetchDoctorAvailableSlots,
+  resolveHospitalIds,
   validatePromoCode,
 } from "@/lib/marham-api";
-import { formatBookedSlotDisplay } from "@/lib/format-appointment-slot";
+import { formatBookedSlotDisplay, parseDisplayTimeTo24Hour } from "@/lib/format-appointment-slot";
 import type { BookedVideoSlot } from "@/lib/types/marham-api";
 import {
   toE164PakistanPhone,
@@ -25,18 +26,28 @@ type LocationDetails = {
   slot: string;
 };
 
+function formatSlotDisplay(
+  bookedSlot: BookedVideoSlot | null,
+  slotsLoading: boolean,
+): string {
+  if (slotsLoading) return "Loading availability...";
+  if (bookedSlot) return formatBookedSlotDisplay(bookedSlot.date, bookedSlot.displayTime);
+  return "No slots available";
+}
+
 function parseLocationDetails(
   hospital: Hospital,
   bookedSlot: BookedVideoSlot | null,
+  slotsLoading: boolean,
 ): LocationDetails {
+  const slot = formatSlotDisplay(bookedSlot, slotsLoading);
+
   if (hospital.isVideo) {
     return {
       hospitalName: "Video Consultation",
       address: "Online",
       city: hospital.city ?? "",
-      slot: bookedSlot
-        ? formatBookedSlotDisplay(bookedSlot.date, bookedSlot.displayTime)
-        : "Loading availability...",
+      slot,
     };
   }
 
@@ -47,7 +58,7 @@ function parseLocationDetails(
       hospitalName: hospital.name,
       address: parts.join(", "),
       city,
-      slot: formatSlot(hospital),
+      slot,
     };
   }
 
@@ -60,43 +71,28 @@ function parseLocationDetails(
     hospitalName,
     address,
     city,
-    slot: formatSlot(hospital),
+    slot,
   };
 }
 
-function formatSlot(hospital: Hospital): string {
-  if (hospital.slot) return hospital.slot;
+function pickFirstAvailableSlot(
+  availableSlots: Awaited<ReturnType<typeof fetchDoctorAvailableSlots>>,
+): BookedVideoSlot | null {
+  for (const day of availableSlots) {
+    const slot = day.slots.find((entry) => entry.available);
+    if (!slot) continue;
 
-  const availability = hospital.availability.toLowerCase();
-  const now = new Date();
-
-  if (availability.includes("today")) {
-    return `${formatDate(now)} - 03:00 PM`;
+    return {
+      date: day.date,
+      time: parseDisplayTimeTo24Hour(slot.time),
+      displayTime: slot.time,
+    };
   }
 
-  if (availability.includes("tomorrow")) {
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return `${formatDate(tomorrow)} - 03:00 PM`;
-  }
-
-  const match = hospital.availability.match(/(?:from\s+)?([A-Za-z]{3})\s+(\d{1,2})/i);
-  if (match) {
-    const month = match[1];
-    const day = match[2].padStart(2, "0");
-    return `${day} ${month} - 03:00 PM`;
-  }
-
-  return hospital.availability;
+  return null;
 }
 
-function formatDate(date: Date): string {
-  const day = date.getDate().toString().padStart(2, "0");
-  const month = date.toLocaleString("en-US", { month: "short" });
-  return `${day} ${month}`;
-}
-
-function resetVideoFormState(setters: {
+function resetModalFormState(setters: {
   setPhone: (value: string) => void;
   setPatientName: (value: string) => void;
   setPromoCode: (value: string) => void;
@@ -104,6 +100,9 @@ function resetVideoFormState(setters: {
   setIsSubmitting: (value: boolean) => void;
   setBookedSlot: (value: BookedVideoSlot | null) => void;
   setBookingFromOutside: (value: boolean) => void;
+  setSlotsLoading: (value: boolean) => void;
+  setResolvedHospitalId: (value: number | undefined) => void;
+  setResolvedDoctorHospitalId: (value: number | undefined) => void;
 }) {
   setters.setPhone("");
   setters.setPatientName("");
@@ -112,6 +111,9 @@ function resetVideoFormState(setters: {
   setters.setIsSubmitting(false);
   setters.setBookedSlot(null);
   setters.setBookingFromOutside(false);
+  setters.setSlotsLoading(false);
+  setters.setResolvedHospitalId(undefined);
+  setters.setResolvedDoctorHospitalId(undefined);
 }
 
 type BookAppointmentModalProps = {
@@ -134,55 +136,69 @@ export function BookAppointmentModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookedSlot, setBookedSlot] = useState<BookedVideoSlot | null>(null);
   const [bookingFromOutside, setBookingFromOutside] = useState(false);
+  const [slotsLoading, setSlotsLoading] = useState(false);
+  const [resolvedHospitalId, setResolvedHospitalId] = useState<number | undefined>();
+  const [resolvedDoctorHospitalId, setResolvedDoctorHospitalId] = useState<number | undefined>();
 
   const isVideo = hospital?.isVideo ?? false;
 
   useEffect(() => {
-    if (!open || !isVideo) {
+    if (!open || !hospital) {
       return;
     }
 
-    console.log("BookAppointmentModal: fetching first available slot", {
-      open,
-      doctorId: doctor.doctorId,
-      hospitalId: hospital?.hospitalId,
-      hospital,
-    });
-
-    // if (!hospital?.hospitalId) {
-    //   console.log("BookAppointmentModal: no hospitalId available for video slot fetch", {
-    //     doctorId: doctor.doctorId,
-    //     hospital,
-    //   });
-    //   setFormError("Video consultation availability is unavailable for this location.");
-    //   setBookedSlot(null);
-    //   return;
-    // }
-
     let cancelled = false;
 
-    const loadSlot = async () => {
+    const loadSlots = async () => {
+      setSlotsLoading(true);
       setFormError(null);
       setBookedSlot(null);
+      setResolvedHospitalId(undefined);
+      setResolvedDoctorHospitalId(undefined);
 
-      const slot = await fetchFirstAvailableSlot(doctor.doctorId, hospital.hospitalId);
-      console.log("BookAppointmentModal: fetchFirstAvailableSlot response", { slot });
+      const ids = await resolveHospitalIds(doctor.doctorId, hospital);
 
       if (cancelled) return;
 
-      setBookedSlot(slot);
+      const hospitalId = ids.hospitalId ?? hospital.hospitalId;
+
+      setResolvedHospitalId(hospitalId);
+      setResolvedDoctorHospitalId(ids.doctorHospitalId ?? hospital.doctorHospitalId);
+
+      console.log("BookAppointmentModal: resolved hospital IDs", {
+        doctorId: doctor.doctorId,
+        hospitalId,
+        doctorHospitalId: ids.doctorHospitalId ?? hospital.doctorHospitalId,
+        hospital,
+      });
+
+      const availableSlots = await fetchDoctorAvailableSlots(doctor.doctorId, hospitalId);
+
+      if (cancelled) return;
+
+      const firstSlot = pickFirstAvailableSlot(availableSlots);
+      setBookedSlot(firstSlot);
+      setSlotsLoading(false);
+
+      if (isVideo && !firstSlot && hospitalId) {
+        setFormError("No available slots found for video consultation.");
+      }
     };
 
-    void loadSlot();
+    void loadSlots();
 
     return () => {
       cancelled = true;
     };
-  }, [open, isVideo, hospital?.hospitalId, doctor.doctorId, hospital]);
+  }, [open, hospital, doctor.doctorId, isVideo]);
 
   if (!hospital) return null;
 
-  const { hospitalName, address, city, slot } = parseLocationDetails(hospital, bookedSlot);
+  const { hospitalName, address, city, slot } = parseLocationDetails(
+    hospital,
+    bookedSlot,
+    slotsLoading,
+  );
 
   const callcenterUrl = buildCallcenterUrl({
     doctorId: doctor.doctorId,
@@ -199,12 +215,12 @@ export function BookAppointmentModal({
     specialityId: doctor.specialityId,
     specialitySlug: doctor.specialitySlug,
     citySlug: doctor.pageCitySlug,
-    hospitalId: hospital.hospitalId,
+    hospitalId: resolvedHospitalId ?? hospital.hospitalId,
   });
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
-      resetVideoFormState({
+      resetModalFormState({
         setPhone,
         setPatientName,
         setPromoCode,
@@ -212,6 +228,9 @@ export function BookAppointmentModal({
         setIsSubmitting,
         setBookedSlot,
         setBookingFromOutside,
+        setSlotsLoading,
+        setResolvedHospitalId,
+        setResolvedDoctorHospitalId,
       });
     }
     onOpenChange(nextOpen);
@@ -256,7 +275,7 @@ export function BookAppointmentModal({
 
         const bookingResult = await bookVideoConsultation({
           doctorId: doctor.doctorId,
-          doctorHospitalId: hospital.doctorHospitalId,
+          doctorHospitalId: resolvedDoctorHospitalId ?? hospital.doctorHospitalId,
           date: bookedSlot.date,
           time: bookedSlot.time,
           patientPhone: toE164PakistanPhone(phoneValidation.normalized),

@@ -5,6 +5,7 @@ export type ApiHospital = {
   hospitalName: string;
   hospitalArea: string;
   hospitalCity: string;
+  hospitalType?: number;
   fee: number;
   isOnlinePaymentEnabled: number;
   discountFee: number;
@@ -13,6 +14,15 @@ export type ApiHospital = {
   lat: number;
   lng: number;
   isLocationVerified: boolean;
+};
+
+export type DoctorProfileResponse = {
+  success: boolean;
+  message: string;
+  data?: {
+    doctorId?: number;
+    hospitals?: ApiHospital[];
+  } | null;
 };
 
 export type ApiDoctor = {

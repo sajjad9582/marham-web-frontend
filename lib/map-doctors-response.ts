@@ -20,7 +20,7 @@ function formatFee(fee: number): string {
 }
 
 function isVideoHospital(hospital: ApiHospital): boolean {
-  return hospital.hospitalName === VIDEO_HOSPITAL_NAME;
+  return hospital.hospitalType === 2 || hospital.hospitalName === VIDEO_HOSPITAL_NAME;
 }
 
 function mapHospital(hospital: ApiHospital, fastConfirm: boolean): Hospital {
@@ -79,20 +79,24 @@ function ensureVideoConsultation(
   const referenceCity = apiHospitals[0]?.hospitalCity ?? pageCitySlug;
   const videoApiHospital = apiHospitals.find((h) => isVideoHospital(h));
 
+  if (!videoApiHospital) {
+    return locations;
+  }
+
   const syntheticVideo: Hospital = {
     name: VIDEO_HOSPITAL_NAME,
     address: "Online appointment",
     city: referenceCity,
     availability: AVAILABILITY_FALLBACK,
-    fee: formatFee(referenceFee),
-    feeAmount: referenceFee,
+    fee: formatFee(videoApiHospital.fee || referenceFee),
+    feeAmount: videoApiHospital.fee || referenceFee,
     fastConfirm,
     isVideo: true,
-    ...(videoApiHospital
-      ? {
-          doctorHospitalId: videoApiHospital.doctorHospitalId,
-          hospitalId: videoApiHospital.hospitalId,
-        }
+    doctorHospitalId: videoApiHospital.doctorHospitalId,
+    hospitalId: videoApiHospital.hospitalId,
+    discountPercentage: videoApiHospital.discountPercentage,
+    ...(videoApiHospital.discountPercentage > 0
+      ? { discount: `Save ${videoApiHospital.discountPercentage}%` }
       : {}),
   };
 
