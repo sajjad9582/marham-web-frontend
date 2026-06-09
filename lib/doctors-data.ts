@@ -1,3 +1,5 @@
+import { PEDIATRICIAN_DISEASES } from "@/lib/constants/doctors-related-links";
+
 export type Hospital = {
   name: string;
   availability: string;
@@ -48,6 +50,19 @@ export const SPECIALITY_QUICK_LINKS: { en: string; ur: string }[] = [
   { en: "General Practitioner", ur: "جنرل ڈاکٹر" },
   { en: "Psychiatrist", ur: "ماہر نفسیات" },
   { en: "Pediatrician", ur: "بچوں کے ماہر ڈاکٹر" },
+];
+
+export type DoctorSearchSuggestionItem =
+  | { kind: "speciality"; en: string; ur: string }
+  | { kind: "disease"; label: string; slug: string };
+
+export const DOCTOR_SEARCH_ITEMS: DoctorSearchSuggestionItem[] = [
+  ...SPECIALITY_QUICK_LINKS.map((item) => ({ kind: "speciality" as const, ...item })),
+  ...PEDIATRICIAN_DISEASES.map((disease) => ({
+    kind: "disease" as const,
+    label: disease.label,
+    slug: disease.slug,
+  })),
 ];
 
 export const formatSlug = (slug: string) =>
