@@ -1,5 +1,5 @@
 import type { Hospital } from "@/lib/doctors-data";
-import { Percent } from "lucide-react";
+import { DiscountOfferIcon } from "./DiscountOfferIcon";
 
 type LocationPricingProps = {
   hospital: Pick<
@@ -16,13 +16,17 @@ function DiscountBanner({
   discountPercentage: number;
   className?: string;
 }) {
+  const label = `Limited Time Offer • Save ${discountPercentage}%`;
+
   return (
     <div
-      className={`discount-offer-banner flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold text-white ${className ?? ""}`}
+      className={`listing-eid-oc-offer-banner discount-offer-banner flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold text-white ${className ?? ""}`}
+      role="note"
+      aria-label={label}
     >
       <span className="relative z-10 flex items-center gap-1.5">
-        <Percent className="h-3 w-3 shrink-0" aria-hidden />
-        <span>Limited Time Offer • Save {discountPercentage}%</span>
+        <DiscountOfferIcon />
+        <span>{label}</span>
       </span>
     </div>
   );

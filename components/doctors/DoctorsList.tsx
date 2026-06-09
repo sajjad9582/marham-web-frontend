@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DoctorCard } from "./DoctorCard";
+import { OnlineDoctorsSlider } from "./OnlineDoctorsSlider";
 import type { Doctor } from "@/lib/doctors-data";
+import { pickOnlineDoctors } from "@/lib/online-doctors-from-listing";
 import { fetchDoctorsListing } from "@/lib/services/doctors-listing-service";
 import type { DoctorsListingFilters } from "@/lib/types/doctors-listing-filters";
 import type { DoctorsListingMeta } from "@/lib/types/marham-api";
 
 const PAGE_SIZE = 6;
+const ONLINE_SLIDER_INTERVAL = 4;
 
 type DoctorsListProps = {
   doctors: Doctor[];
@@ -31,6 +34,8 @@ export function DoctorsList({
   const [loading, setLoading] = useState(false);
 
   const hasMore = visible < doctors.length || currentPage < lastPage;
+  const onlineDoctors = useMemo(() => pickOnlineDoctors(doctors), [doctors]);
+  const showOnlineSlider = onlineDoctors.length > 0;
 
   useEffect(() => {
     setDoctors(initialDoctors);
@@ -66,11 +71,26 @@ export function DoctorsList({
     }
   };
 
+  const visibleDoctors = doctors.slice(0, visible);
+
+  const listingItems = visibleDoctors.flatMap((doctor, index) => {
+    const items = [<DoctorCard key={doctor.id} doctor={doctor} />];
+
+    if (showOnlineSlider && (index + 1) % ONLINE_SLIDER_INTERVAL === 0) {
+      items.push(
+        <OnlineDoctorsSlider
+          key={`online-doctors-after-${doctor.id}`}
+          doctors={onlineDoctors}
+        />,
+      );
+    }
+
+    return items;
+  });
+
   return (
     <div className="space-y-4">
-      {doctors.slice(0, visible).map((d) => (
-        <DoctorCard key={d.id} doctor={d} />
-      ))}
+      {listingItems}
       {hasMore && (
         <div className="flex justify-center pt-2">
           <button
