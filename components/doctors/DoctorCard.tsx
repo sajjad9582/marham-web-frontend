@@ -8,8 +8,9 @@ import {
   buildDoctorProfileUrl,
   buildVideoCallUrl,
 } from "@/lib/doctors-urls";
-import { CheckCircle2, Video } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { BookAppointmentModal } from "./BookAppointmentModal";
+import { LocationBox } from "./LocationBox";
 
 export function DoctorCard({ doctor }: { doctor: Doctor }) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -131,7 +132,7 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
           {/* Mobile: single horizontal scroll row. Desktop: wrapped grid (unchanged). */}
           <div className="mt-4 flex overflow-x-auto snap-x gap-2.5   px-2 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 sm:overflow-visible lg:grid-cols-3 xl:grid-cols-4">
             {doctor.locations.map((h, i) => (
-              <LocationBox key={i} h={h} onSelect={() => openBooking(h)} />
+              <LocationBox key={i} hospital={h} onSelect={() => openBooking(h)} />
             ))}
           </div>
 
@@ -199,35 +200,3 @@ function Stat({ label, value, accent }: { label: string; value: string; accent?:
   );
 }
 
-function LocationBox({ h, onSelect }: { h: Hospital; onSelect: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className={`rounded-md border-1 cursor-pointer px-3 py-2.5 text-left w-56 flex-shrink-0 snap-start sm:w-full sm:flex-shrink transition-colors hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brandblue)]/40 ${
-        h.isVideo
-          ? "border-[var(--color-brandteal)] hover:bg-[var(--color-skyblue)]/80"
-          : "border-[var(--color-paleblue)] bg-white hover:border-[var(--color-brandblue)]"
-      }`}
-    >
-      <div className="flex items-start justify-between gap-1">
-        <p className={`text-xs font-bold ${h.isVideo ? "text-[var(--color-brandblue)]" : "text-[var(--color-darknavy)]"} flex items-center gap-1`}>
-          {h.isVideo && <Video className="h-3.5 w-3.5" />}
-          <span className="line-clamp-1">{h.name}</span>
-        </p>
-        {h.fastConfirm && (
-          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[var(--color-lightgreen)] text-[var(--color-maingreen)] whitespace-nowrap">
-            Fast Confirm
-          </span>
-        )}
-      </div>
-      <p className="text-[11px] text-muted-foreground mt-1">{h.availability}</p>
-      <p className="text-sm font-bold text-[var(--color-darknavy)] mt-1">
-        {h.fee}
-        {h.discount && (
-          <span className="ml-1.5 text-[10px] font-medium text-[var(--color-mainred)]">• {h.discount}</span>
-        )}
-      </p>
-    </button>
-  );
-}

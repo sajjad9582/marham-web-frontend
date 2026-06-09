@@ -5,6 +5,9 @@ export type Hospital = {
   availability: string;
   fee: string;
   feeAmount: number;
+  originalFeeAmount?: number;
+  originalFee?: string;
+  hasDiscount?: boolean;
   isVideo?: boolean;
   fastConfirm?: boolean;
   discount?: string;

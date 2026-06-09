@@ -4,6 +4,7 @@ import { doctorNameToSlug } from "@/lib/slugify";
 import type { ApiDoctor, ApiHospital } from "@/lib/types/marham-api";
 
 const AVAILABILITY_FALLBACK = "Contact for availability";
+const AVAILABILITY_ENRICHED = "Available Today";
 
 function formatExperience(years: number): string {
   if (!years) return "—";
@@ -27,6 +28,52 @@ function isVideoHospital(hospital: ApiHospital): boolean {
   );
 }
 
+function hasActiveDiscount(hospital: ApiHospital): boolean {
+  return hospital.discountFee > 0 && hospital.discountFee < hospital.fee;
+}
+
+function mapPricing(hospital: ApiHospital): Pick<
+  Hospital,
+  | "fee"
+  | "feeAmount"
+  | "originalFeeAmount"
+  | "originalFee"
+  | "hasDiscount"
+  | "discount"
+  | "discountPercentage"
+> {
+  const discounted = hasActiveDiscount(hospital);
+
+  if (discounted) {
+    return {
+      fee: formatFee(hospital.discountFee),
+      feeAmount: hospital.discountFee,
+      originalFeeAmount: hospital.fee,
+      originalFee: formatFee(hospital.fee),
+      hasDiscount: true,
+      discountPercentage: hospital.discountPercentage,
+      discount: `Save ${hospital.discountPercentage}%`,
+    };
+  }
+
+  return {
+    fee: formatFee(hospital.fee),
+    feeAmount: hospital.fee,
+    discountPercentage: hospital.discountPercentage,
+    ...(hospital.discountPercentage > 0
+      ? { discount: `Save ${hospital.discountPercentage}%` }
+      : {}),
+  };
+}
+
+function mapAvailability(hospital: ApiHospital): string {
+  const enriched =
+    hospital.hospitalType === 2 ||
+    hasActiveDiscount(hospital) ||
+    hospital.discountPercentage > 0;
+  return enriched ? AVAILABILITY_ENRICHED : AVAILABILITY_FALLBACK;
+}
+
 function mapHospital(hospital: ApiHospital, fastConfirm: boolean): Hospital {
   const isVideo = isVideoHospital(hospital);
 
@@ -44,17 +91,12 @@ function mapHospital(hospital: ApiHospital, fastConfirm: boolean): Hospital {
     name,
     address,
     city: hospital.hospitalCity,
-    availability: AVAILABILITY_FALLBACK,
-    fee: formatFee(hospital.fee),
-    feeAmount: hospital.fee,
+    availability: mapAvailability(hospital),
     fastConfirm,
     isVideo,
     doctorHospitalId: hospital.doctorHospitalId,
     hospitalId: hospital.hospitalId,
-    discountPercentage: hospital.discountPercentage,
-    ...(hospital.discountPercentage > 0
-      ? { discount: `Save ${hospital.discountPercentage}%` }
-      : {}),
+    ...mapPricing(hospital),
   };
 }
 
@@ -85,29 +127,39 @@ function ensureVideoConsultation(
 
   const videoApiHospital = apiHospitals.find((h) => isVideoHospital(h));
   const referenceHospital = videoApiHospital ?? apiHospitals[0];
+  const referenceApiHospital = videoApiHospital ?? referenceHospital;
   const referenceFee = videoApiHospital?.fee ?? getLowestFee(apiHospitals);
   const referenceCity =
     videoApiHospital?.hospitalCity ??
     apiHospitals[0]?.hospitalCity ??
     pageCitySlug;
 
+  const pricing = mapPricing({
+    ...referenceApiHospital,
+    fee: referenceFee,
+    discountFee: videoApiHospital?.discountFee ?? referenceHospital.discountFee,
+    discount: videoApiHospital?.discount ?? referenceHospital.discount,
+    discountPercentage:
+      videoApiHospital?.discountPercentage ?? referenceHospital.discountPercentage,
+    hospitalType: 2,
+    hospitalName: VIDEO_HOSPITAL_NAME,
+  });
+
   const syntheticVideo: Hospital = {
     name: VIDEO_HOSPITAL_NAME,
     address: "Online appointment",
     city: referenceCity,
-    availability: AVAILABILITY_FALLBACK,
-    fee: formatFee(referenceFee),
-    feeAmount: referenceFee,
+    availability: mapAvailability({
+      ...referenceApiHospital,
+      hospitalType: 2,
+      discountFee: videoApiHospital?.discountFee ?? 0,
+      discountPercentage: videoApiHospital?.discountPercentage ?? 0,
+    }),
     fastConfirm,
     isVideo: true,
     doctorHospitalId: videoApiHospital?.doctorHospitalId ?? referenceHospital.doctorHospitalId,
     hospitalId: videoApiHospital?.hospitalId ?? referenceHospital.hospitalId,
-    discountPercentage: videoApiHospital?.discountPercentage ?? referenceHospital.discountPercentage,
-    ...((videoApiHospital?.discountPercentage ?? referenceHospital.discountPercentage) > 0
-      ? {
-          discount: `Save ${videoApiHospital?.discountPercentage ?? referenceHospital.discountPercentage}%`,
-        }
-      : {}),
+    ...pricing,
   };
 
   return sortLocations([syntheticVideo, ...locations]);

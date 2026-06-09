@@ -1,6 +1,7 @@
 import type { Doctor } from "@/lib/doctors-data";
 import { formatSlug } from "@/lib/doctors-data";
 import { MARHAM_API_ENDPOINTS } from "@/lib/constants/marham-api-endpoints";
+import { enrichListingDemoData } from "@/lib/enrich-listing-demo-data";
 import { mapApiDoctors } from "@/lib/map-doctors-response";
 import type { DoctorsListingFilters } from "@/lib/types/doctors-listing-filters";
 import type { DoctorsListingMeta, DoctorsListingResponse } from "@/lib/types/marham-api";
@@ -108,9 +109,11 @@ export async function fetchDoctorsListing(
       return { doctors: [], meta: json.data?.meta ?? EMPTY_META };
     }
 
+    const enrichedDoctors = enrichListingDemoData(json.data.doctors);
+
     const doctors = applyClientFilters(
       mapApiDoctors(
-        json.data.doctors,
+        enrichedDoctors,
         filters.city ?? "lahore",
         filters.specialitySlug ?? "pediatrician",
       ),

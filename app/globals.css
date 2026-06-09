@@ -271,3 +271,85 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+/* Discount offer banner — subtle wave glow left → right */
+.discount-offer-banner {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: linear-gradient(
+    118deg,
+    var(--color-deepblue) 0%,
+    #015a85 42%,
+    var(--color-marineblue) 58%,
+    var(--color-deepblue) 100%
+  );
+}
+
+.discount-offer-banner::before,
+.discount-offer-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Soft static diagonal highlight */
+.discount-offer-banner::before {
+  background: linear-gradient(
+    118deg,
+    transparent 18%,
+    rgba(255, 255, 255, 0.06) 38%,
+    rgba(160, 215, 255, 0.14) 50%,
+    rgba(255, 255, 255, 0.05) 62%,
+    transparent 82%
+  );
+  z-index: 0;
+}
+
+/* Moving wave shimmer */
+.discount-offer-banner::after {
+  top: -40%;
+  right: auto;
+  bottom: -40%;
+  left: -55%;
+  width: 38%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.04) 28%,
+    rgba(190, 230, 255, 0.22) 46%,
+    rgba(255, 255, 255, 0.28) 50%,
+    rgba(140, 200, 255, 0.18) 54%,
+    rgba(255, 255, 255, 0.04) 72%,
+    transparent 100%
+  );
+  transform: skewX(-18deg);
+  animation: discount-banner-wave 2.8s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes discount-banner-wave {
+  0% {
+    left: -55%;
+    opacity: 0.35;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    left: 115%;
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .discount-offer-banner::after {
+    animation: none;
+    opacity: 0.5;
+    left: 20%;
+  }
+}

@@ -15,6 +15,7 @@ import { formatBookedSlotDisplay, parseDisplayTimeTo24Hour } from "@/lib/format-
 import type { BookedVideoSlot } from "@/lib/types/marham-api";
 import { cn } from "@/lib/utils";
 import { IntlPhoneInput, type IntlPhoneInputHandle } from "./intl-phone-input";
+import { LocationPricing } from "./LocationPricing";
 
 type LocationDetails = {
   hospitalName: string;
@@ -341,22 +342,30 @@ export function BookAppointmentModal({
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto rounded-md border border-[var(--color-paleblue)] bg-[var(--color-frostblue)] p-3.5 space-y-2">
-          
-           
-            {isVideo ? (
-              <p className="text-sm font-bold text-[var(--color-brandblue)] underline underline-offset-2">
-                {hospitalName}
-              </p>
-            ) : (
-              <a
-                href={callcenterUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-bold text-[var(--color-brandblue)] underline underline-offset-2 hover:text-[var(--color-darknavy)]"
-              >
-                {hospitalName}
-              </a>
-            )}
+            <div className="flex items-start justify-between gap-2">
+              {isVideo ? (
+                <p className="text-sm font-bold text-[var(--color-brandblue)] underline underline-offset-2">
+                  {hospitalName}
+                </p>
+              ) : (
+                <a
+                  href={callcenterUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-bold text-[var(--color-brandblue)] underline underline-offset-2 hover:text-[var(--color-darknavy)]"
+                >
+                  {hospitalName}
+                </a>
+              )}
+              {hospital.fastConfirm && (
+                <span
+                  className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[var(--color-lightgreen)] text-[var(--color-maingreen)] whitespace-nowrap shrink-0"
+                  title="Doctor confirms immediately after booking."
+                >
+                  Fast Confirm
+                </span>
+              )}
+            </div>
             {address && (
               <p className="text-xs text-muted-foreground">{address}</p>
             )}
@@ -388,19 +397,7 @@ export function BookAppointmentModal({
                 </>
               )}
             </div>
-            <p className="text-sm font-bold text-[var(--color-darknavy)]">
-              {hospital.fee}
-              {hospital.discount && (
-                <span className="ml-1.5 text-xs font-medium text-[var(--color-mainred)]">
-                  • {hospital.discount}
-                </span>
-              )}
-            </p>
-            {hospital.fastConfirm && (
-              <span className="inline-block text-[10px] font-semibold px-1.5 py-0.5 rounded bg-[var(--color-lightgreen)] text-[var(--color-maingreen)]">
-                Fast Confirm
-              </span>
-            )}
+            <LocationPricing hospital={hospital} variant="modal" />
           </div>
 
           <form onSubmit={handleSubmit} className="relative z-20 mt-4 shrink-0 space-y-3 overflow-visible">
