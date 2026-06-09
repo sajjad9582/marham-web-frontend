@@ -108,7 +108,7 @@ export function OnlineDoctorCard({ doctor }: OnlineDoctorCardProps) {
           href={callNowUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 flex w-full items-center justify-center rounded-md bg-[#347a52] hover:bg-[#2d6a47] text-white text-sm font-semibold py-2.5 transition-colors"
+          className="mt-3 flex w-full items-center justify-center rounded-md bg-maingreen hover:bg-maingreen/70 text-white text-sm font-semibold py-2.5 transition-colors"
         >
           Call Now
         </a>

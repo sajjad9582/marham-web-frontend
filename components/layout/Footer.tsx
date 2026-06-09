@@ -33,7 +33,7 @@ export function Footer() {
             ))}
           </ul>
         </nav>
-        <p className="mt-4 text-sm text-black">
+        <p className="mt-4 text-[13px] text-black">
           Copyrights @ Marham Inc. All rights reserved since 2016 - {year}
         </p>
       </div>

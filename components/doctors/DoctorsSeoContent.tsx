@@ -155,8 +155,8 @@ export function DoctorsSeoContent() {
       </Block>
 
       <Block title="Frequently Asked Questions about Best Pediatricians in Lahore">
-        <div className="space-y-3">
-          <details className="group   bg-slate-50">
+        <div className="space-y-1">
+          <details className="group   bg-base">
             <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-slate-900">
               Which symptoms and issues are treated by Pediatricians in Lahore?
               <ChevronDownIcon className="size-4 shrink-0 text-slate-600 transition-transform duration-200 group-open:rotate-180" />
@@ -166,7 +166,7 @@ export function DoctorsSeoContent() {
             </div>
           </details>
 
-          <details className="group  bg-slate-50">
+          <details className="group  bg-base">
             <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-slate-900">
               Who is the best Pediatrician in Lahore?
               <ChevronDownIcon className="size-4 shrink-0 text-slate-600 transition-transform duration-200 group-open:rotate-180" />
@@ -183,7 +183,7 @@ export function DoctorsSeoContent() {
             </div>
           </details>
 
-          <details className="group  bg-slate-50">
+          <details className="group  bg-base">
             <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-slate-900">
               How to book an appointment with the best doctor in Lahore?
               <ChevronDownIcon className="size-4 shrink-0 text-slate-600 transition-transform duration-200 group-open:rotate-180" />
@@ -193,7 +193,7 @@ export function DoctorsSeoContent() {
             </div>
           </details>
 
-          <details className="group  bg-slate-50">
+          <details className="group  bg-base">
             <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-slate-900">
               How to choose a best child specialist in Lahore?
               <ChevronDownIcon className="size-4 shrink-0 text-slate-600 transition-transform duration-200 group-open:rotate-180" />
@@ -203,7 +203,7 @@ export function DoctorsSeoContent() {
             </div>
           </details>
 
-          <details className="group  bg-slate-50">
+          <details className="group  bg-base">
             <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-slate-900">
               How much does a Paediatrician cost in Lahore?
               <ChevronDownIcon className="size-4 shrink-0 text-slate-600 transition-transform duration-200 group-open:rotate-180" />
@@ -213,7 +213,7 @@ export function DoctorsSeoContent() {
             </div>
           </details>
 
-          <details className="group  bg-slate-50">
+          <details className="group  bg-base">
             <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-slate-900">
               Who is the top paediatrician in Lahore 2026?
               <ChevronDownIcon className="size-4 shrink-0 text-slate-600 transition-transform duration-200 group-open:rotate-180" />
@@ -235,7 +235,7 @@ export function DoctorsSeoContent() {
             </div>
           </details>
 
-          <details className="group  bg-slate-50">
+          <details className="group  bg-base">
             <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-slate-900">
               How can I find a Pediatrician near me in Lahore?
               <ChevronDownIcon className="size-4 shrink-0 text-slate-600 transition-transform duration-200 group-open:rotate-180" />

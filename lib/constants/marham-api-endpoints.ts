@@ -7,3 +7,4 @@ export const MARHAM_API_ENDPOINTS = {
 } as const;
 
 export const ONLINE_CONSULTATION_PROGRAM_ID = 4;
+///api/mobile/doctor/listing?id=29&searchFilter=Speciality
