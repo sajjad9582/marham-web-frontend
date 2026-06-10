@@ -4,12 +4,9 @@ import { MARHAM_API_ENDPOINTS } from "@/lib/constants/marham-api-endpoints";
 import { mapApiDoctors } from "@/lib/map-doctors-response";
 import type { DoctorsListingFilters } from "@/lib/types/doctors-listing-filters";
 import type { DoctorsListingMeta, DoctorsListingResponse } from "@/lib/types/marham-api";
+import { getApiBaseUrl } from "@/lib/get-api-base-url";
 
 const EMPTY_META: DoctorsListingMeta = { total: 0, page: 1, lastPage: 1 };
-const DEFAULT_API_BASE_URL = "http://localhost:3001";
-function getApiBaseUrl(): string {
-  return process.env.NEXT_PUBLIC_MARHAM_API_URL ?? DEFAULT_API_BASE_URL;
-}
 
 function buildListingQueryParams(filters: DoctorsListingFilters): URLSearchParams {
   const params = new URLSearchParams();
