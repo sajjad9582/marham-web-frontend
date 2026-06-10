@@ -1,21 +1,14 @@
-import { getServices } from "@/lib/server/get-services";
-import { handleApiError, jsonNestPayload, requireFields } from "@/lib/server/handle-api";
+import { validatePromoCode } from "@/lib/services/promo-codes";
+import { handleApiError, jsonNestPayload } from "@/lib/api/handle-api";
+import { validatePromoCodeSchema } from "@/lib/schemas/promo-codes";
+import { parseJsonBody } from "@/lib/schemas/parse";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as Record<string, unknown>;
-    requireFields(body, ["promoCode", "programId"]);
-
-    const { promoCode } = await getServices();
-    const result = await promoCode.validatePromoCode({
-      promoCode: String(body.promoCode),
-      programId: Number(body.programId),
-      doctorId: body.doctorId != null ? Number(body.doctorId) : undefined,
-      specialityId: body.specialityId != null ? Number(body.specialityId) : undefined,
-      orderId: body.orderId != null ? Number(body.orderId) : undefined,
-    });
+    const body = await parseJsonBody(validatePromoCodeSchema, request);
+    const result = await validatePromoCode(body);
 
     if (!result.valid || !result.promoCode) {
       return jsonNestPayload({

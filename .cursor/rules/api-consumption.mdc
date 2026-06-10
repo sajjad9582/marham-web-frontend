@@ -5,32 +5,47 @@ alwaysApply: true
 
 # API consumption (Marham frontend)
 
-HTTP APIs live in **this Next.js app** at `app/api/` (TypeORM + MySQL). The frontend calls them via `lib/services/*` using `NEXT_PUBLIC_MARHAM_API_URL` (defaults to `http://localhost:3001`).
+HTTP APIs live in **this Next.js app** at `app/api/` (Drizzle ORM + MySQL). The frontend calls them via `lib/client/*` using `NEXT_PUBLIC_MARHAM_API_URL` (defaults to `http://localhost:3001`).
 
 ## Adding a new endpoint
 
-1. Add Route Handler in `app/api/` (`export const runtime = "nodejs"`)
-2. Add service/repository logic in `lib/server/`
-3. Add path to `lib/constants/marham-api-endpoints.ts`
-4. Add typed fetch helper in `lib/services/`
+1. Add Zod schema in `lib/schemas/`
+2. Add query functions in `lib/db/queries/`
+3. Add plain async function in `lib/services/`
+4. Add thin Route Handler in `app/api/` (`export const runtime = "nodejs"`)
+5. Add path to `lib/constants/marham-api-endpoints.ts`
+6. Add typed fetch helper in `lib/client/` (for client components only)
 
 ## Examples
 
 ```tsx
-// ✅ GOOD — lib helper calling local API (server or client)
-import { fetchDoctorsListing } from "@/lib/services/doctors-listing-service"
+// ✅ Server Component — direct import (no HTTP round-trip)
+import { getDoctorsListingPageData } from "@/lib/services/doctors-listing-page"
 
-// Server Component
-const { doctors, meta } = await fetchDoctorsListing({ page: 1 }, { revalidate: 60 })
+const { doctors, meta } = await getDoctorsListingPageData(filters)
 
-// Client Component
+// ✅ Client Component — lib helper calling local API
+import { fetchDoctorsListing } from "@/lib/client/doctors-listing-service"
+
 const { doctors, meta } = await fetchDoctorsListing({ page: currentPage + 1 })
+```
+
+```ts
+// ✅ Route handler pattern
+import { parseSearchParams } from "@/lib/schemas/parse"
+import { getDoctorsSchema } from "@/lib/schemas/doctors"
+import { getDoctorListing } from "@/lib/services/doctors"
+import { handleApiError, jsonSuccess } from "@/lib/api/handle-api"
+
+const query = parseSearchParams(getDoctorsSchema, searchParams)
+const data = await getDoctorListing(query)
+return jsonSuccess(data)
 ```
 
 ## Env
 
 - `NEXT_PUBLIC_MARHAM_API_URL` — API base URL (e.g. `http://localhost:3001`)
-- `DB_*`, `MARHAM_URL`, CDN vars — server-only in `.env` (never `NEXT_PUBLIC_*` for secrets)
+- `DB_*`, `DB_POOL_SIZE`, `MARHAM_URL`, CDN vars — server-only in `.env` (never `NEXT_PUBLIC_*` for secrets)
 
 ## Legacy
 

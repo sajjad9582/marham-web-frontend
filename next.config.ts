@@ -1,7 +1,7 @@
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["typeorm", "mysql2", "reflect-metadata"],
+  serverExternalPackages: ["mysql2"],
   experimental: {
     serverMinification: false,
   },

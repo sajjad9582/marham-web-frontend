@@ -5,7 +5,7 @@ import { DoctorCard } from "./DoctorCard";
 import { OnlineDoctorsSlider } from "./OnlineDoctorsSlider";
 import type { Doctor } from "@/lib/doctors-data";
 import { pickOnlineDoctors } from "@/lib/online-doctors-from-listing";
-import { fetchDoctorsListing } from "@/lib/services/doctors-listing-service";
+import { fetchDoctorsListing } from "@/lib/client/doctors-listing-service";
 import type { DoctorsListingFilters } from "@/lib/types/doctors-listing-filters";
 import type { DoctorsListingMeta } from "@/lib/types/marham-api";
 

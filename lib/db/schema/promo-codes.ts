@@ -1,0 +1,38 @@
+// @ts-nocheck
+import {
+  mysqlTable,
+  int,
+  bigint,
+  float,
+  double,
+  tinyint,
+  smallint,
+  boolean,
+  varchar,
+  text,
+  longtext,
+  date,
+  time,
+  timestamp,
+  datetime,
+  json,
+  decimal,
+} from "drizzle-orm/mysql-core";
+
+export const promoCodes = mysqlTable("promo_codes", {
+  id: int("id").autoincrement().primaryKey(),
+  code: varchar("code", { length: 255 }).notNull(),
+  companyName: varchar("company_name", { length: 255 }),
+  validity: int("validity").notNull(),
+  validFrom: date("valid_from"),
+  validTo: date("valid_to"),
+  discountPercentage: decimal("discount_percentage").notNull(),
+  claimedAt: datetime("claimed_at"),
+  applicableOn: json("applicable_on"),
+  usageCount: int("usage_count").notNull().default(0),
+  isSpecialityOrDoctor: int("is_speciality_or_doctor"),
+  specialityOrDoctorData: text("speciality_or_doctor_data"),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at"),
+  deletedAt: timestamp("deleted_at"),
+});

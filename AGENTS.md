@@ -9,6 +9,7 @@ This is **not** the Next.js you know. This project uses **Next.js 16** with brea
 | Layer | Choice |
 |-------|--------|
 | Framework | Next.js 16 (App Router) |
+| ORM | Drizzle ORM + mysql2 pool |
 | UI | shadcn/ui (`components/ui/`) |
 | Styling | Tailwind CSS v4 |
 | Icons | lucide-react |
@@ -24,18 +25,23 @@ components/
   ui/                   # shadcn primitives (add via CLI)
   doctors/              # Doctors feature components
   layout/               # SiteHeader, Footer, etc.
-  logo/                 # Brand assets
 hooks/                  # use-* hooks
 lib/
-  server/               # TypeORM backend (entities, repos, services)
-  services/             # Frontend API fetch helpers
+  api/                  # Route helpers (handle-api, http-error, api-response)
+  client/               # Client-side HTTP fetch helpers
+  db/
+    index.ts            # Singleton mysql2 pool + drizzle db
+    schema/             # Drizzle table definitions (all 30 tables)
+    queries/            # Plain exported query functions
+  schemas/              # Zod input validation
+  services/             # Server business logic (plain async functions)
 ```
 
 Path alias: `@/*` → project root.
 
 ## Backend APIs (nextjstemp)
 
-APIs live in `app/api/` and use TypeORM in `lib/server/` against the same MySQL DB as MarhamOne.
+APIs live in `app/api/` and use Drizzle in `lib/db/` against the same MySQL DB as MarhamOne.
 
 ### Active endpoints
 
@@ -49,34 +55,27 @@ APIs live in `app/api/` and use TypeORM in `lib/server/` against the same MySQL 
 
 ### Adding endpoints
 
-1. Thin Route Handler in `app/api/`
-2. Business logic in `lib/server/services/`
-3. Fetch helper in `lib/services/`
-4. Path constant in `lib/constants/marham-api-endpoints.ts`
+1. Zod schema in `lib/schemas/`
+2. Query functions in `lib/db/queries/`
+3. Plain async function in `lib/services/`
+4. Thin Route Handler in `app/api/`
+5. Path constant in `lib/constants/marham-api-endpoints.ts`
+6. Fetch helper in `lib/client/` (client components only)
 
 ### Fetching patterns
 
-- **Server Components:** call `lib/services/*` with `next: { revalidate }` where appropriate
-- **Client Components:** same fetchers via `NEXT_PUBLIC_MARHAM_API_URL` (default `http://localhost:3001`)
-- **Env:** `DB_*` for server-only MySQL; `NEXT_PUBLIC_MARHAM_API_URL` for API base URL
+- **Server Components:** import `lib/services/*` directly (no HTTP)
+- **Client Components:** call `lib/client/*` via `NEXT_PUBLIC_MARHAM_API_URL`
+- **Env:** `DB_*` for server-only MySQL; `NEXT_PUBLIC_MARHAM_API_URL` for client API base URL
 
 See `.cursor/rules/api-consumption.mdc` for examples.
-
-### API and legacy URL organization
-
-- **API paths:** `lib/constants/marham-api-endpoints.ts`
-- **Fetch services:** `lib/services/` (e.g. `doctors-listing-service.ts`)
-- **Legacy Marham.pk URLs:** `NEXT_PUBLIC_MARHAM_HOME_URL` + `lib/doctors-urls.ts` + `lib/constants/marham-legacy-urls.ts`
-- **Speciality slug → ID:** `lib/constants/speciality-slugs.ts`
-
-Experimental pages (e.g. doctors listing) redirect booking/profile actions to the legacy Marham.pk site. Do not build booking or profile pages in Next.js until the migration is ready.
 
 ## Page routes
 
 Every `app/**/page.tsx` should be a **thin orchestrator**:
 
 1. Resolve params / searchParams
-2. Fetch or load data from `lib/`
+2. Fetch or load data from `lib/services/`
 3. Compose feature components from `components/<feature>/`
 
 Move all substantial UI and logic out of page files. See `.cursor/rules/pages.mdc`.
@@ -84,17 +83,8 @@ Move all substantial UI and logic out of page files. See `.cursor/rules/pages.md
 ## Styling & colors
 
 - Use **Tailwind** exclusively.
-- Colors are defined in `app/globals.css` — use them via Tailwind classes:
-  - **Semantic**: `primary`, `secondary`, `muted`, `accent`, `background`, `foreground`, `border`, `destructive`
-  - **Brand**: `maingreen`, `darknavy`, `brandblue`, `brandteal`, `mainblue`, `deepblue`, `skyblue`, `washblue`, `pagegray`, `maingray`, `mainred`, etc.
-- Do not add new color hex values inline; extend `globals.css` if a token is missing.
+- Colors are defined in `app/globals.css` — use them via Tailwind classes.
 - Use `cn()` from `@/lib/utils` for conditional classes.
-
-## shadcn workflow
-
-- Add components: `npx shadcn@latest add <name>`
-- Config: `components.json`
-- Customize in `components/ui/` sparingly; prefer wrapping in feature components.
 
 ## Conventions
 

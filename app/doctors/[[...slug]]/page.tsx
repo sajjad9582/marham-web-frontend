@@ -9,7 +9,7 @@ import { DoctorsSeoContent } from "@/components/doctors/DoctorsSeoContent";
 import { formatSlug } from "@/lib/doctors-data";
 import { buildDoctorsListingMetadata } from "@/lib/doctors-metadata";
 import { parseDoctorsListingFilters } from "@/lib/parse-doctors-search-params";
-import { fetchDoctorsListing } from "@/lib/services/doctors-listing-service";
+import { getDoctorsListingPageData } from "@/lib/services/doctors-listing-page";
 import type { DoctorsListingSearchParams } from "@/lib/types/doctors-listing-filters";
 
 type PageProps = {
@@ -42,7 +42,7 @@ export default async function SpecialitiesPage({ params, searchParams }: PagePro
   const speciality = safeSlug[1] ?? "pediatrician";
 
   const filters = parseDoctorsListingFilters(resolvedSearchParams, { city, specialitySlug: speciality });
-  const { doctors, meta } = await fetchDoctorsListing(filters, { revalidate: 60 });
+  const { doctors, meta } = await getDoctorsListingPageData(filters);
 
   const jsonLd = {
     "@context": "https://schema.org",
