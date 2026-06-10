@@ -1,0 +1,10 @@
+node_modules
+.next
+.git
+.env
+.docs
+.env.*
+!.env.example
+*.md
+.cursor
+coverage

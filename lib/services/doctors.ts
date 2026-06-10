@@ -23,6 +23,7 @@ import { HtmlUtil, DateUtil } from "@/lib/db/utils";
 import { ReviewMapperUtil } from "@/lib/db/utils/review-mapper.util";
 import { DoctorBadgesUtil } from "@/lib/db/utils/doctor-badges.util";
 import type { DoctorSearchParams } from "@/lib/db/interfaces/doctor-search-params.interface";
+import type { ApiDoctor, DoctorsListingMeta } from "@/lib/types/marham-api";
 
 function generateDoctorFaqs(doctor: Record<string, unknown>, hospitals: Record<string, unknown>[]) {
   let faqs = "";
@@ -124,7 +125,7 @@ export async function getDoctorListing(
   query: GetDoctorsInput,
   userId?: number,
   isOnPanelOnly = true,
-) {
+): Promise<{ doctors: ApiDoctor[]; meta: DoctorsListingMeta }> {
   const {
     specialityId,
     city,
@@ -279,7 +280,7 @@ export async function getDoctorListing(
   }));
 
   return {
-    doctors: formattedData,
+    doctors: formattedData as ApiDoctor[],
     meta: {
       total,
       page,
