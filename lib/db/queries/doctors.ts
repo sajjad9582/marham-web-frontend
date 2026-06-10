@@ -85,6 +85,7 @@ export async function findDoctorsWithFilters(
     sortBy,
     sortDirection,
     availableToday,
+    discounts,
     limit,
     skip,
     isOnPanelOnly,
@@ -182,6 +183,22 @@ export async function findDoctorsWithFilters(
     const todayColumn = dayColumns[dayjs().day()];
     conditions.push(`listing_filter.${todayColumn} = 1`);
   }
+  if (discounts) {
+    const discountCityClause = city ? "AND dl_disc.hospitalCity = ?" : "";
+    conditions.push(`EXISTS (
+      SELECT 1 FROM doclisting dl_disc
+      WHERE dl_disc.dlID = doctor.dlID
+        AND dl_disc.discountFee > 0
+        AND dl_disc.discountFee < dl_disc.docFee
+        AND dl_disc.deleted_at IS NULL
+        AND dl_disc.active_at IS NOT NULL
+        AND dl_disc.inactive_at IS NULL
+        ${discountCityClause}
+    )`);
+    if (city) {
+      queryParams.push(city);
+    }
+  }
 
   const direction = sortDirection || (sortBy === "experience" ? "DESC" : "ASC");
   let orderBy = "doctor.points DESC";
@@ -214,6 +231,7 @@ export async function findDoctorsWithFilters(
     "doctor.rating as rating",
     "doctor.points as points",
     "listing_filter.speciality_name as specialityName",
+    "listing_filter.doctorSlug as doctorSlug",
     `(SELECT COUNT(r.id) FROM doctor_reviews r WHERE r.dID = doctor.dlID AND r.deleted_at IS NULL AND r.publishedByDoctor = 1) as totalReviews`,
     ...extraSelects,
   ].join(", ");
@@ -270,6 +288,7 @@ export async function findDoctorsWithFilters(
     rating: row.rating,
     points: row.points,
     specialityName: row.specialityName ?? null,
+    doctorSlug: row.doctorSlug ?? null,
     totalReviews: row.totalReviews ? parseInt(String(row.totalReviews), 10) : 0,
     areasOfInterest: areasMap.get(Number(row.id)) || [],
   }));

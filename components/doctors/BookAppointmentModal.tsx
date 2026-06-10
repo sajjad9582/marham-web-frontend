@@ -4,8 +4,15 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { CheckCircle2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { Doctor, Hospital } from "@/lib/doctors-data";
-import { buildCallcenterBookingUrl, buildCallcenterUrl, buildVideoPaymentUrl } from "@/lib/doctors-urls";
 import {
+  buildCallcenterBookingUrl,
+  buildPhysicalAppointmentThanksUrl,
+  getMarhamHomeUrl,
+  buildVideoCallUrl,
+  buildVideoPaymentUrl,
+} from "@/lib/doctors-urls";
+import {
+  bookPhysicalAppointment,
   bookVideoConsultation,
   fetchDoctorAvailableSlots,
   resolveHospitalIds,
@@ -196,23 +203,19 @@ export function BookAppointmentModal({
     slotsLoading,
   );
 
-  const callcenterUrl = buildCallcenterUrl({
-    doctorId: doctor.doctorId,
-    doctorName: doctor.name,
-    specialityId: doctor.specialityId,
-    specialitySlug: doctor.specialitySlug,
-    citySlug: doctor.pageCitySlug,
-    hospitalCitySlug: hospital.city ?? city,
-  });
-
-  const doctorCallcenterUrl = buildCallcenterBookingUrl({
-    doctorId: doctor.doctorId,
-    doctorName: doctor.name,
-    specialityId: doctor.specialityId,
-    specialitySlug: doctor.specialitySlug,
-    citySlug: doctor.pageCitySlug,
-    hospitalId: resolvedHospitalId ?? hospital.hospitalId,
-  });
+  const bookingSlug = hospital.doctorSlug ?? doctor.slug;
+  const hospitalId = resolvedHospitalId ?? hospital.hospitalId;
+  const bookAppointmentCallcenterUrl =
+    bookingSlug && hospitalId
+      ? `${getMarhamHomeUrl().replace(/\/$/, "")}/${bookingSlug.replace(/^\/+/, "")}/callcenter?h_id=${hospitalId}`
+      : buildCallcenterBookingUrl({
+          doctorId: doctor.doctorId,
+          doctorName: doctor.name,
+          specialityId: doctor.specialityId,
+          specialitySlug: doctor.specialitySlug,
+          citySlug: doctor.pageCitySlug,
+          hospitalId,
+        });
 
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
@@ -287,21 +290,81 @@ export function BookAppointmentModal({
         const paymentUrl =
           bookingResult.data.paymentUrl ||
           buildVideoPaymentUrl(bookingResult.data.onlineConsultationId);
+          setIsSubmitting(false);
 
         window.location.href = paymentUrl;
       } catch {
         setFormError("Something went wrong. Please try again.");
       } finally {
-        setIsSubmitting(false);
+        // setIsSubmitting(false);
+        console.log("submitted ");
       }
 
       return;
     }
 
-    window.location.href = callcenterUrl;
+    if (!patientName.trim()) {
+      setFormError("Please enter patient name.");
+      return;
+    }
+
+    const patientPhone = phoneInputRef.current?.getE164Number();
+    if (!patientPhone) {
+      setFormError("Phone Number is Invalid!");
+      return;
+    }
+
+    if (!bookedSlot) {
+      setFormError("No available slots found for this appointment.");
+      return;
+    }
+
+    const doctorHospitalId = resolvedDoctorHospitalId ?? hospital.doctorHospitalId;
+    if (!doctorHospitalId) {
+      setFormError("Unable to resolve hospital listing. Please try again.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const bookingResult = await bookPhysicalAppointment({
+        doctorId: doctor.doctorId,
+        doctorHospitalId,
+        date: bookedSlot.date,
+        time: bookedSlot.time,
+        patientPhone,
+        patientName: patientName.trim(),
+        awayFromCity: bookingFromOutside,
+      });
+
+      if (!bookingResult.success || !bookingResult.data?.id) {
+        setFormError(bookingResult.message || "Unable to complete booking. Please try again.");
+        return;
+      }
+
+      const thanksUrl = buildPhysicalAppointmentThanksUrl({
+        slug: hospital.doctorSlug ?? doctor.slug,
+        doctorId: doctor.doctorId,
+        doctorName: doctor.name,
+        specialitySlug: doctor.specialitySlug,
+        citySlug: doctor.pageCitySlug,
+        appointmentId: bookingResult.data.id,
+        awayFromCity: bookingFromOutside,
+      });
+      
+      setIsSubmitting(false);
+
+      window.location.href = thanksUrl;
+    } catch {
+      setFormError("Something went wrong. Please try again.");
+    } finally {
+      console.log("submitted ");
+    }
   };
 
   const videoSubmitDisabled = isVideo && (!bookedSlot || isSubmitting);
+  const hospitalSubmitDisabled = !isVideo && (!bookedSlot || isSubmitting);
 
   return (
     <Dialog.Root open={open} onOpenChange={handleOpenChange}>
@@ -349,7 +412,7 @@ export function BookAppointmentModal({
                 </p>
               ) : (
                 <a
-                  href={callcenterUrl}
+                  href={bookAppointmentCallcenterUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm font-bold text-[var(--color-brandblue)] underline underline-offset-2 hover:text-[var(--color-darknavy)]"
@@ -377,7 +440,7 @@ export function BookAppointmentModal({
                     |
                   </span>
                   <a
-                    href={doctorCallcenterUrl}
+                    href={bookAppointmentCallcenterUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm font-semibold text-[var(--color-brandblue)] hover:underline"
@@ -386,14 +449,19 @@ export function BookAppointmentModal({
                   </a>
                 </>
               )}
-              {isVideo && bookedSlot && (
+              {isVideo && (
                 <>
                   <span className="text-[var(--color-paleblue)]" aria-hidden>
                     |
                   </span>
-                  <span className="text-sm font-semibold text-[var(--color-brandblue)]">
+                  <a
+                    href={buildVideoCallUrl(doctor.specialityId, doctor.doctorId)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-semibold text-[var(--color-brandblue)] hover:underline"
+                  >
                     Change Date &amp; Time
-                  </span>
+                  </a>
                 </>
               )}
             </div>
@@ -471,7 +539,7 @@ export function BookAppointmentModal({
 
             <button
               type="submit"
-              disabled={videoSubmitDisabled}
+              disabled={isVideo ? videoSubmitDisabled : hospitalSubmitDisabled}
               className="w-full rounded-md bg-[var(--color-darknavy)] hover:bg-[var(--color-brandblue)] disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-semibold py-3 transition-colors mt-2"
             >
               {isVideo ? "Book A Video Call" : "Book Appointment"}

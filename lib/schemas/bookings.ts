@@ -1,5 +1,18 @@
 import { z } from "zod";
 
+export const webBookAppointmentSchema = z.object({
+  doctorId: z.coerce.number().int().positive("doctorId is required"),
+  doctorHospitalId: z.coerce.number().int().positive("doctorHospitalId is required"),
+  date: z.string().min(1, "date is required"),
+  time: z.string().min(1, "time is required"),
+  patientPhone: z.string().min(1, "patientPhone is required"),
+  patientName: z.string().min(1, "patientName is required"),
+  awayFromCity: z.coerce.boolean().optional(),
+  promoCode: z.string().optional(),
+  appType: z.coerce.number().int().optional(),
+  deviceType: z.coerce.number().int().optional(),
+});
+
 export const webBookOnlineConsultationSchema = z.object({
   doctorId: z.coerce.number().int().positive("doctorId is required"),
   doctorHospitalId: z.coerce.number().int().positive().optional(),
@@ -26,6 +39,7 @@ export const createOnlineConsultationSchema = z.object({
   utmCampaign: z.string().optional(),
 });
 
+export type WebBookAppointmentInput = z.infer<typeof webBookAppointmentSchema>;
 export type WebBookOnlineConsultationInput = z.infer<typeof webBookOnlineConsultationSchema>;
 export type CreateOnlineConsultationInput = z.infer<typeof createOnlineConsultationSchema>;
 
@@ -36,6 +50,7 @@ export type CreateAppointmentInput = {
   time: string;
   userId: number;
   addedBy?: number;
+  updatedBy?: number;
   deviceType?: number;
   appType?: number;
   patientCity?: string;
@@ -45,4 +60,7 @@ export type CreateAppointmentInput = {
   utmCampaign?: string;
   promoCode?: string;
   appointmentUserType?: number;
+  awayFromCity?: boolean;
+  uuid?: string;
+  visitorSource?: string;
 };

@@ -38,6 +38,7 @@ import { AppointmentType } from "@/lib/db/enums/appointment-type.enum";
 import type { ReferralOptions } from "@/lib/db/interfaces/referral-values.interface";
 import { DateUtil, StringUtil } from "@/lib/db/utils";
 import { DoctorImageUtil } from "@/lib/db/utils/doctor-image.util";
+import { notifyPhysicalAppointmentCreated } from "@/lib/services/communications";
 
 async function validateSlotAvailability(
   doctorId: number,
@@ -200,12 +201,23 @@ function shouldShowCallButton(appointment: PatientAppointment): boolean {
   return false;
 }
 
+function serializeBigIntFields<T extends Record<string, unknown>>(data: T): T {
+  const serialized = { ...data };
+  for (const key of Object.keys(serialized)) {
+    const value = serialized[key];
+    if (typeof value === "bigint") {
+      serialized[key] = String(value) as T[Extract<keyof T, string>];
+    }
+  }
+  return serialized;
+}
+
 export function createAppointmentResponseDto(appointment: PatientAppointment) {
   const configService = { get: getConfig };
   const { doctor, hospital, doctorListing, ...appointmentData } = appointment;
 
   return {
-    ...appointmentData,
+    ...serializeBigIntFields(appointmentData as Record<string, unknown>),
     date: appointment.date ? DateUtil.formatDate(appointment.date) : "",
     time: appointment.time ? DateUtil.formatTime(appointment.time) : "",
     appointmentStatusTitle: appointment.statusDetail?.title || "",
@@ -359,6 +371,10 @@ export async function createAppointment(
     isDirectBooking: listing.directBooking,
     followUp: isFollowUp,
     utmSource: "marham-one",
+    userId: targetUser.id,
+    appType: input.appType ?? 0,
+    deviceType: input.deviceType ?? 0,
+    awayFromCity: input.awayFromCity ? 1 : 0,
   });
 
   const richAppointment = wantFullObject
@@ -372,6 +388,8 @@ export async function createAppointment(
   if (validPromoCode) {
     await markPromoCodeAsUsed(validPromoCode.id);
   }
+
+  notifyPhysicalAppointmentCreated(richAppointment);
 
   if (wantFullObject) return richAppointment;
   return createAppointmentResponseDto(richAppointment);

@@ -14,6 +14,8 @@ export {
   resolveHospitalIds,
 } from "@/lib/client/doctor-profile-service";
 export {
+  bookPhysicalAppointment,
   bookVideoConsultation,
+  type BookPhysicalAppointmentParams,
   type BookVideoConsultationParams,
 } from "@/lib/client/web-booking-service";

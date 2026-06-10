@@ -1,10 +1,9 @@
 import type { Doctor } from "@/lib/doctors-data";
 import { formatSlug } from "@/lib/doctors-data";
 import { getDoctorListing } from "@/lib/services/doctors";
-import { enrichListingDemoData } from "@/lib/enrich-listing-demo-data";
 import { mapApiDoctors } from "@/lib/map-doctors-response";
 import type { DoctorsListingFilters } from "@/lib/types/doctors-listing-filters";
-import type { ApiDoctor, DoctorsListingMeta } from "@/lib/types/marham-api";
+import type { DoctorsListingMeta } from "@/lib/types/marham-api";
 
 const EMPTY_META: DoctorsListingMeta = { total: 0, page: 1, lastPage: 1 };
 
@@ -34,7 +33,7 @@ function applyClientFilters(doctors: Doctor[], filters: DoctorsListingFilters): 
   let result = applyFeeFilter(doctors, filters);
 
   if (filters.discounts) {
-    result = result.filter((d) => d.locations.some((l) => l.discount !== undefined));
+    result = result.filter((d) => d.locations.some((l) => l.hasDiscount));
   }
 
   if (filters.topReviewed) {
@@ -62,6 +61,7 @@ export async function getDoctorsListingPageData(
         gender: filters.gender,
         sortBy: filters.sortBy,
         sortDirection: filters.sortDirection,
+        discounts: filters.discounts,
       },
       undefined,
       true,
@@ -71,10 +71,9 @@ export async function getDoctorsListingPageData(
       return { doctors: [], meta: data?.meta ?? EMPTY_META };
     }
 
-    const enrichedDoctors = enrichListingDemoData(data.doctors as ApiDoctor[]);
     const doctors = applyClientFilters(
       mapApiDoctors(
-        enrichedDoctors,
+        data.doctors,
         filters.city ?? "lahore",
         filters.specialitySlug ?? "pediatrician",
       ),

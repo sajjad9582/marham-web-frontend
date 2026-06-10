@@ -21,14 +21,11 @@ function formatFee(fee: number): string {
 }
 
 function isVideoHospital(hospital: ApiHospital): boolean {
-  const normalizedName = hospital.hospitalName?.trim().toLowerCase();
-  return (
-    hospital.hospitalType === 2 ||
-    normalizedName === VIDEO_HOSPITAL_NAME.toLowerCase()
-  );
+  return Number(hospital.hospitalType) === 2;
 }
 
-function hasActiveDiscount(hospital: ApiHospital): boolean {
+function hasDbDiscount(hospital: ApiHospital): boolean {
+  if (hospital.hasDiscount !== undefined) return hospital.hasDiscount;
   return hospital.discountFee > 0 && hospital.discountFee < hospital.fee;
 }
 
@@ -42,7 +39,7 @@ function mapPricing(hospital: ApiHospital): Pick<
   | "discount"
   | "discountPercentage"
 > {
-  const discounted = hasActiveDiscount(hospital);
+  const discounted = hasDbDiscount(hospital);
 
   if (discounted) {
     return {
@@ -52,25 +49,20 @@ function mapPricing(hospital: ApiHospital): Pick<
       originalFee: formatFee(hospital.fee),
       hasDiscount: true,
       discountPercentage: hospital.discountPercentage,
-      discount: `Save ${hospital.discountPercentage}%`,
+      discount: hospital.discountPercentage
+        ? `Save ${hospital.discountPercentage}%`
+        : undefined,
     };
   }
 
   return {
     fee: formatFee(hospital.fee),
     feeAmount: hospital.fee,
-    discountPercentage: hospital.discountPercentage,
-    ...(hospital.discountPercentage > 0
-      ? { discount: `Save ${hospital.discountPercentage}%` }
-      : {}),
   };
 }
 
 function mapAvailability(hospital: ApiHospital): string {
-  const enriched =
-    hospital.hospitalType === 2 ||
-    hasActiveDiscount(hospital) ||
-    hospital.discountPercentage > 0;
+  const enriched = Number(hospital.hospitalType) === 2 || hasDbDiscount(hospital);
   return enriched ? AVAILABILITY_ENRICHED : AVAILABILITY_FALLBACK;
 }
 
@@ -96,6 +88,7 @@ function mapHospital(hospital: ApiHospital, fastConfirm: boolean): Hospital {
     isVideo,
     doctorHospitalId: hospital.doctorHospitalId,
     hospitalId: hospital.hospitalId,
+    doctorSlug: hospital.doctorSlug,
     ...mapPricing(hospital),
   };
 }
@@ -106,76 +99,16 @@ function sortLocations(locations: Hospital[]): Hospital[] {
   return [...video, ...physical];
 }
 
-function getLowestFee(hospitals: ApiHospital[]): number {
-  if (!hospitals.length) return 0;
-  return Math.min(...hospitals.map((h) => h.fee));
-}
-
-function ensureVideoConsultation(
-  locations: Hospital[],
-  apiHospitals: ApiHospital[],
-  pageCitySlug: string,
-  fastConfirm: boolean,
-): Hospital[] {
-  if (locations.some((l) => l.isVideo)) {
-    return sortLocations(locations);
-  }
-
-  if (apiHospitals.length === 0) {
-    return locations;
-  }
-
-  const videoApiHospital = apiHospitals.find((h) => isVideoHospital(h));
-  const referenceHospital = videoApiHospital ?? apiHospitals[0];
-  const referenceApiHospital = videoApiHospital ?? referenceHospital;
-  const referenceFee = videoApiHospital?.fee ?? getLowestFee(apiHospitals);
-  const referenceCity =
-    videoApiHospital?.hospitalCity ??
-    apiHospitals[0]?.hospitalCity ??
-    pageCitySlug;
-
-  const pricing = mapPricing({
-    ...referenceApiHospital,
-    fee: referenceFee,
-    discountFee: videoApiHospital?.discountFee ?? referenceHospital.discountFee,
-    discount: videoApiHospital?.discount ?? referenceHospital.discount,
-    discountPercentage:
-      videoApiHospital?.discountPercentage ?? referenceHospital.discountPercentage,
-    hospitalType: 2,
-    hospitalName: VIDEO_HOSPITAL_NAME,
-  });
-
-  const syntheticVideo: Hospital = {
-    name: VIDEO_HOSPITAL_NAME,
-    address: "Online appointment",
-    city: referenceCity,
-    availability: mapAvailability({
-      ...referenceApiHospital,
-      hospitalType: 2,
-      discountFee: videoApiHospital?.discountFee ?? 0,
-      discountPercentage: videoApiHospital?.discountPercentage ?? 0,
-    }),
-    fastConfirm,
-    isVideo: true,
-    doctorHospitalId: videoApiHospital?.doctorHospitalId ?? referenceHospital.doctorHospitalId,
-    hospitalId: videoApiHospital?.hospitalId ?? referenceHospital.hospitalId,
-    ...pricing,
-  };
-
-  return sortLocations([syntheticVideo, ...locations]);
-}
-
 export function mapApiDoctor(apiDoctor: ApiDoctor, pageCitySlug: string, specialitySlug: string): Doctor {
   const fastConfirm = apiDoctor.firstComeFirstServe === 1;
   const apiHospitals = apiDoctor.hospitals ?? [];
-  const mappedLocations = apiHospitals.map((h) => mapHospital(h, fastConfirm));
-  const locations = ensureVideoConsultation(mappedLocations, apiHospitals, pageCitySlug, fastConfirm);
-  const hasVideoCall = locations.some((l) => l.isVideo);
+  const locations = sortLocations(apiHospitals.map((h) => mapHospital(h, fastConfirm)));
+  const hasVideoCall = apiHospitals.some((h) => isVideoHospital(h));
 
   return {
     id: String(apiDoctor.doctorId),
     doctorId: apiDoctor.doctorId,
-    slug: doctorNameToSlug(apiDoctor.name),
+    slug: apiDoctor.slug || doctorNameToSlug(apiDoctor.name),
     specialityId: apiDoctor.specialityId,
     specialitySlug,
     pageCitySlug,

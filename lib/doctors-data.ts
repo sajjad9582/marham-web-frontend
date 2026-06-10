@@ -17,6 +17,7 @@ export type Hospital = {
   slot?: string;
   doctorHospitalId?: number;
   hospitalId?: number;
+  doctorSlug?: string;
 };
 
 export type Doctor = {

@@ -8,6 +8,24 @@ export function getMarhamHomeUrl(): string {
   return process.env.NEXT_PUBLIC_MARHAM_HOME_URL ?? DEFAULT_HOME_URL;
 }
 
+function normalizeSlugPath(slug: string): string {
+  return slug.replace(/^\/+/, "");
+}
+
+export function buildDoctorProfileUrlFromSlug(slug: string): string {
+  const home = getMarhamHomeUrl().replace(/\/$/, "");
+  return `${home}/${normalizeSlugPath(slug)}`;
+}
+
+export function buildBookAppointmentUrlFromSlug(
+  slug: string,
+  hospitalId?: number,
+): string {
+  const base = `${buildDoctorProfileUrlFromSlug(slug)}/callcenter`;
+  if (!hospitalId) return base;
+  return `${base}?h_id=${hospitalId}`;
+}
+
 type DoctorUrlParams = {
   doctorId: number;
   doctorName: string;
@@ -45,8 +63,11 @@ export function buildBookAppointmentUrl(params: DoctorUrlParams): string {
 }
 
 export function buildCallcenterBookingUrl(
-  params: DoctorUrlParams & { hospitalId?: number },
+  params: DoctorUrlParams & { hospitalId?: number; slug?: string },
 ): string {
+  if (params.slug) {
+    return buildBookAppointmentUrlFromSlug(params.slug, params.hospitalId);
+  }
   const url = buildBookAppointmentUrl(params);
   if (!params.hospitalId) return url;
   return `${url}?h_id=${params.hospitalId}`;
@@ -69,4 +90,31 @@ export function buildCallcenterUrl(params: DoctorUrlParams): string {
 export function buildVideoPaymentUrl(onlineConsultationId: number): string {
   const home = getMarhamHomeUrl().replace(/\/$/, "");
   return `${home}/payment/methods/${ONLINE_CONSULTATION_PROGRAM_ID}/${onlineConsultationId}?version=v1`;
+}
+
+type PhysicalAppointmentThanksUrlParams = {
+  slug?: string;
+  doctorId: number;
+  doctorName: string;
+  specialitySlug: string;
+  citySlug: string;
+  appointmentId: string | number;
+  awayFromCity?: boolean;
+};
+
+export function buildPhysicalAppointmentThanksUrl(
+  params: PhysicalAppointmentThanksUrlParams,
+): string {
+  const type = params.awayFromCity ? 1 : 0;
+  const profileBase = params.slug
+    ? buildDoctorProfileUrlFromSlug(params.slug)
+    : buildDoctorProfileUrl({
+        doctorId: params.doctorId,
+        doctorName: params.doctorName,
+        specialityId: 0,
+        specialitySlug: params.specialitySlug,
+        citySlug: params.citySlug,
+      });
+
+  return `${profileBase}/thanks/${params.appointmentId}?type=${type}`;
 }

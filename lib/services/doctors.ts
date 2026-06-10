@@ -144,6 +144,7 @@ export async function getDoctorListing(
     sortDirection,
     availableToday,
     hospitalId,
+    discounts,
   } = query;
 
   const limit = 12;
@@ -183,6 +184,7 @@ export async function getDoctorListing(
     skip,
     isOnPanelOnly,
     hospitalId,
+    discounts,
   };
 
   const [doctors, total] = await findDoctorsWithFilters(filters);
@@ -197,16 +199,29 @@ export async function getDoctorListing(
 
   const hospitalsWithDiscounts = await Promise.all(
     hospitals.map(async (hospital) => {
+      const fee = Number(hospital.fee) || 0;
+      const rawDiscountFee = Number(hospital.discountFee) || 0;
+      const hasDiscount = rawDiscountFee > 0 && rawDiscountFee < fee;
+
+      if (!hasDiscount) {
+        return {
+          ...hospital,
+          hasDiscount: false,
+          finalDiscountFee: fee,
+          discountPercentage: 0,
+        };
+      }
+
       const { finalDiscountFee, discountPercentage } = await calculateDiscount({
-        fee: hospital.fee,
-        discountFee: hospital.discountFee,
+        fee,
+        discountFee: rawDiscountFee,
         hospitalType: hospital.hospitalType,
         isOnlinePaymentEnabled: hospital.isOnlinePaymentEnabled,
         isCorporateUser: corporateUser !== null,
         corporateAppointmentDiscount: corporateUser?.appointmentDiscountPercentage,
         corporateConsultationDiscount: corporateUser?.videoConsultationDiscountPercentage,
       });
-      return { ...hospital, finalDiscountFee, discountPercentage };
+      return { ...hospital, hasDiscount: true, finalDiscountFee, discountPercentage };
     }),
   );
 
@@ -217,15 +232,23 @@ export async function getDoctorListing(
         doctorHospitalId: hospital.id,
         doctorId: hospital.doctorId,
         hospitalId: hospital.hospitalId,
+        doctorSlug: hospital.doctorSlug,
         hospitalName: hospital.hospitalName,
-        hospitalType: hospital.hospitalType,
+        hospitalType: Number(hospital.hospitalType) || 1,
         hospitalArea: hospital.hospitalArea,
         hospitalCity: hospital.hospitalCity,
         fee: hospital.fee,
+        hasDiscount: hospital.hasDiscount,
         isOnlinePaymentEnabled: hospital.isOnlinePaymentEnabled,
-        discountFee: hospital.fee != hospital.finalDiscountFee ? hospital.finalDiscountFee : 0,
-        discount: hospital.finalDiscountFee ? hospital.fee - hospital.finalDiscountFee : 0,
-        discountPercentage: hospital.discountPercentage || 0,
+        discountFee:
+          hospital.hasDiscount && hospital.fee != hospital.finalDiscountFee
+            ? hospital.finalDiscountFee
+            : 0,
+        discount:
+          hospital.hasDiscount && hospital.finalDiscountFee
+            ? hospital.fee - hospital.finalDiscountFee
+            : 0,
+        discountPercentage: hospital.hasDiscount ? hospital.discountPercentage || 0 : 0,
         lat: hospital.hospital?.lat,
         lng: hospital.hospital?.lng,
         isLocationVerified: hospital.hospital?.locationVerifiedAt !== null,
@@ -237,6 +260,7 @@ export async function getDoctorListing(
 
   const formattedData = doctors.map((doc) => ({
     doctorId: doc.id,
+    slug: doc.doctorSlug,
     name: doc.name,
     experience: doc.experience,
     profilePic: doc.profilePic,

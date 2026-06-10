@@ -2,10 +2,12 @@ export type ApiHospital = {
   doctorHospitalId: number;
   doctorId: number;
   hospitalId: number;
+  doctorSlug?: string;
   hospitalName: string;
   hospitalArea: string;
   hospitalCity: string;
   hospitalType?: number;
+  hasDiscount?: boolean;
   fee: number;
   isOnlinePaymentEnabled: number;
   discountFee: number;
@@ -27,6 +29,7 @@ export type DoctorProfileResponse = {
 
 export type ApiDoctor = {
   doctorId: number;
+  slug?: string;
   name: string;
   experience: number;
   profilePic: string;
@@ -98,6 +101,29 @@ export type WebBookVideoConsultationResponse = {
     programId: number;
     paymentUrl: string;
   } | null;
+};
+
+export type WebBookPhysicalAppointmentData = {
+  id: string;
+  doctorName?: string | null;
+  hospitalName?: string | null;
+  patientName?: string | null;
+  patientPhone?: string | null;
+  date: string;
+  time: string;
+  fee?: number;
+  appointmentStatusTitle: string;
+  appointmentSubStatusTitle: string;
+  appointmentType: number;
+  programId: number;
+  paymentReceivedStatus: string;
+  isOnlinePaymentEnabled: boolean;
+};
+
+export type WebBookPhysicalAppointmentResponse = {
+  success: boolean;
+  message: string;
+  data?: WebBookPhysicalAppointmentData | null;
 };
 
 export type BookedVideoSlot = {

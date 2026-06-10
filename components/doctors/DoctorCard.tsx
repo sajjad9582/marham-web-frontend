@@ -5,7 +5,9 @@ import Image from "next/image";
 import { Doctor, Hospital } from "@/lib/doctors-data";
 import {
   buildBookAppointmentUrl,
+  buildBookAppointmentUrlFromSlug,
   buildDoctorProfileUrl,
+  buildDoctorProfileUrlFromSlug,
   buildVideoCallUrl,
 } from "@/lib/doctors-urls";
 import { CheckCircle2 } from "lucide-react";
@@ -43,8 +45,12 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
     citySlug: doctor.pageCitySlug,
   };
 
-  const profileUrl = buildDoctorProfileUrl(urlParams);
-  const bookAppointmentUrl = buildBookAppointmentUrl(urlParams);
+  const profileUrl = doctor.slug
+    ? buildDoctorProfileUrlFromSlug(doctor.slug)
+    : buildDoctorProfileUrl(urlParams);
+  const bookAppointmentUrl = doctor.slug
+    ? buildBookAppointmentUrlFromSlug(doctor.slug)
+    : buildBookAppointmentUrl(urlParams);
   const videoCallUrl = buildVideoCallUrl(doctor.specialityId, doctor.doctorId);
 
   const avatar = doctor.profilePic && !imgError ? (

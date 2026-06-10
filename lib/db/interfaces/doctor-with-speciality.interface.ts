@@ -7,4 +7,5 @@ export interface DoctorWithSpeciality extends Omit<DoctorRow, "areaOfInterest"> 
     areasOfInterest?: string | string[];
     specialityName?: string;
     totalReviews?: number;
+    doctorSlug?: string;
 }

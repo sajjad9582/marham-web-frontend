@@ -10,6 +10,7 @@ import {
 } from "@/lib/online-doctors-from-listing";
 import {
   buildDoctorProfileUrl,
+  buildDoctorProfileUrlFromSlug,
   buildVideoCallUrl,
 } from "@/lib/doctors-urls";
 import { Star } from "lucide-react";
@@ -21,13 +22,15 @@ type OnlineDoctorCardProps = {
 export function OnlineDoctorCard({ doctor }: OnlineDoctorCardProps) {
   const [imgError, setImgError] = useState(false);
 
-  const profileUrl = buildDoctorProfileUrl({
-    doctorId: doctor.doctorId,
-    doctorName: doctor.name,
-    specialityId: doctor.specialityId,
-    specialitySlug: doctor.specialitySlug,
-    citySlug: doctor.pageCitySlug,
-  });
+  const profileUrl = doctor.slug
+    ? buildDoctorProfileUrlFromSlug(doctor.slug)
+    : buildDoctorProfileUrl({
+        doctorId: doctor.doctorId,
+        doctorName: doctor.name,
+        specialityId: doctor.specialityId,
+        specialitySlug: doctor.specialitySlug,
+        citySlug: doctor.pageCitySlug,
+      });
 
   const callNowUrl = buildVideoCallUrl(doctor.specialityId, doctor.doctorId);
   const fee = getOnlineConsultationFee(doctor);

@@ -27,6 +27,10 @@ export const getDoctorsSchema = z.object({
     .enum(["true", "false", "1", "0"])
     .transform((v) => v === "true" || v === "1")
     .optional(),
+  discounts: z
+    .enum(["true", "false", "1", "0"])
+    .transform((v) => v === "true" || v === "1")
+    .optional(),
   hospitalId: optionalInt,
   doctorslug: z.string().optional(),
 });
