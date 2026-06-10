@@ -1,0 +1,10 @@
+export enum PaymentStatus {
+    UNPAID = 0,
+    PAID = 1,
+    EVIDENCE_RECEIVED = 2,
+    PENDING = 3,
+    TO_BE_REFUND = 4,
+    REFUNDED = 5,
+    UNABLE_TO_VERIFY_PAYMENT_EVIDENCE = 6,
+    INCORRECT_ACCOUNT_DETAILS = 7
+}

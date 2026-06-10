@@ -1,42 +1,24 @@
 ---
-description: API consumption rules — frontend calls MarhamOne only, never hosts APIs
+description: API consumption rules — frontend calls nextjstemp Route Handlers
 alwaysApply: true
 ---
 
 # API consumption (Marham frontend)
 
-All HTTP APIs live in **MarhamOne** (NestJS at `NEXT_PUBLIC_MARHAM_API_URL`). This Next.js project is a **consumer only**.
+HTTP APIs live in **this Next.js app** at `app/api/` (TypeORM + MySQL). The frontend calls them via `lib/services/*` using `NEXT_PUBLIC_MARHAM_API_URL` (defaults to `http://localhost:3001`).
 
-## Forbidden
+## Adding a new endpoint
 
-- `app/api/**/route.ts` — Route Handlers
-- Next.js API proxies or BFF layers
-- Server Actions used as API endpoints
-- TanStack `createServerFn` wrappers acting as backend logic
-- Direct `fetch("/api/...")` to local Next.js routes
-
-## Required workflow for new data needs
-
-1. Implement endpoint in `MarhamOne/src/modules/` (controller → service → repository)
-2. Update `MarhamOne/API_DOCUMENTATION.md`
-3. Add typed fetch helper in `lib/` (e.g. `lib/marham-api.ts`)
-4. Call helper from pages (Server Components) or components (Client Components)
+1. Add Route Handler in `app/api/` (`export const runtime = "nodejs"`)
+2. Add service/repository logic in `lib/server/`
+3. Add path to `lib/constants/marham-api-endpoints.ts`
+4. Add typed fetch helper in `lib/services/`
 
 ## Examples
 
 ```tsx
-// ❌ BAD — Next.js API route
-// app/api/doctors-listing/route.ts
-export async function GET(request: NextRequest) {
-  const data = await fetchDoctorsListing(...)
-  return NextResponse.json(data)
-}
-
-// ❌ BAD — client calling local Next.js proxy
-const res = await fetch("/api/doctors-listing?page=2")
-
-// ✅ GOOD — lib helper calling MarhamOne (server or client)
-import { fetchDoctorsListing } from "@/lib/marham-api"
+// ✅ GOOD — lib helper calling local API (server or client)
+import { fetchDoctorsListing } from "@/lib/services/doctors-listing-service"
 
 // Server Component
 const { doctors, meta } = await fetchDoctorsListing({ page: 1 }, { revalidate: 60 })
@@ -47,5 +29,9 @@ const { doctors, meta } = await fetchDoctorsListing({ page: currentPage + 1 })
 
 ## Env
 
-- `NEXT_PUBLIC_MARHAM_API_URL` — NestJS base URL (e.g. `http://localhost:3000`)
-- Never put secrets in `NEXT_PUBLIC_*` variables
+- `NEXT_PUBLIC_MARHAM_API_URL` — API base URL (e.g. `http://localhost:3001`)
+- `DB_*`, `MARHAM_URL`, CDN vars — server-only in `.env` (never `NEXT_PUBLIC_*` for secrets)
+
+## Legacy
+
+`MarhamOne/` (NestJS on :3000) is reference only; do not add new endpoints there for this frontend.

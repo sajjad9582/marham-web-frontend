@@ -7,8 +7,7 @@ import type { DoctorsListingFilters } from "@/lib/types/doctors-listing-filters"
 import type { DoctorsListingMeta, DoctorsListingResponse } from "@/lib/types/marham-api";
 
 const EMPTY_META: DoctorsListingMeta = { total: 0, page: 1, lastPage: 1 };
-// const DEFAULT_API_BASE_URL = "http://localhost:3000";
-const DEFAULT_API_BASE_URL = "https://www.marham.pk/";
+const DEFAULT_API_BASE_URL = "http://localhost:3001";
 function getApiBaseUrl(): string {
   return process.env.NEXT_PUBLIC_MARHAM_API_URL ?? DEFAULT_API_BASE_URL;
 }

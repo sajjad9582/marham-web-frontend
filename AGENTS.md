@@ -26,33 +26,39 @@ components/
   layout/               # SiteHeader, Footer, etc.
   logo/                 # Brand assets
 hooks/                  # use-* hooks
-lib/                    # Data, utils, config, API clients (consume MarhamOne)
+lib/
+  server/               # TypeORM backend (entities, repos, services)
+  services/             # Frontend API fetch helpers
 ```
 
 Path alias: `@/*` → project root.
 
-## Backend API consumption (mandatory)
+## Backend APIs (nextjstemp)
 
-This frontend **never hosts HTTP APIs**. All endpoints live in `MarhamOne/` (NestJS).
+APIs live in `app/api/` and use TypeORM in `lib/server/` against the same MySQL DB as MarhamOne.
 
-### Never create
+### Active endpoints
 
-- `app/api/**/route.ts` (Route Handlers)
-- Next.js API proxies or BFF layers
-- Server Actions used as API endpoints
-- TanStack `createServerFn` wrappers acting as backend logic
+| Method | Path |
+|--------|------|
+| GET | `/api/doctors/listing` |
+| GET | `/api/doctors/profile` |
+| GET | `/api/doctors/available-slots` |
+| POST | `/api/promo-codes/validate` |
+| POST | `/api/web/online-consultation/book` |
 
-### Always do
+### Adding endpoints
 
-1. Add the endpoint in `MarhamOne/src/modules/` and update `MarhamOne/API_DOCUMENTATION.md`
-2. Add a typed fetch helper in `lib/` (e.g. `lib/marham-api.ts`, `lib/types/`)
-3. Call the helper from pages or components — never implement endpoints in Next.js
+1. Thin Route Handler in `app/api/`
+2. Business logic in `lib/server/services/`
+3. Fetch helper in `lib/services/`
+4. Path constant in `lib/constants/marham-api-endpoints.ts`
 
 ### Fetching patterns
 
-- **Server Components:** call `lib/` fetchers with `next: { revalidate }` where appropriate
-- **Client Components:** call the same `lib/` fetchers using `NEXT_PUBLIC_MARHAM_API_URL` (browser → NestJS via CORS)
-- **Env:** `NEXT_PUBLIC_MARHAM_API_URL` for the NestJS base URL — never put secrets in `NEXT_PUBLIC_*`
+- **Server Components:** call `lib/services/*` with `next: { revalidate }` where appropriate
+- **Client Components:** same fetchers via `NEXT_PUBLIC_MARHAM_API_URL` (default `http://localhost:3001`)
+- **Env:** `DB_*` for server-only MySQL; `NEXT_PUBLIC_MARHAM_API_URL` for API base URL
 
 See `.cursor/rules/api-consumption.mdc` for examples.
 

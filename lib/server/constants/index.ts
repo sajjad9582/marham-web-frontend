@@ -1,0 +1,1 @@
+export const CALL_BUTTON_SHOW_UP_WINDOW_MS = 2 * 60 * 60 * 1000;
