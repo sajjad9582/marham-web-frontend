@@ -16,7 +16,7 @@ const config = {
     webCdnUrl: process.env.WEB_CDN_URL || "https://static.marham.pk/",
     defaultMaleImage: "assets/images/doctor-photo-male.webp",
     defaultFemaleImage: "assets/images/doctor-photo-female.webp",
-    marhamUrl: process.env.MARHAM_URL || "https://www.marham.pk/",
+    marhamUrl: process.env.MARHAM_URL || process.env.NEXT_PUBLIC_SITE_URL!,
   },
   marhamPhysicalAppointmentDiscountPercentage: Number(
     process.env.MARHAM_PHYSICAL_APPOINTMENT_DISCOUNT_PERCENTAGE || 0,

@@ -2,7 +2,7 @@ import { MARHAM_LEGACY_PATHS } from "@/lib/constants/marham-legacy-urls";
 import { ONLINE_CONSULTATION_PROGRAM_ID } from "@/lib/constants/marham-api-endpoints";
 import { doctorNameToSlug, toSlug } from "@/lib/slugify";
 
-const DEFAULT_HOME_URL = "https://www.marham.pk";
+const DEFAULT_HOME_URL = process.env.NEXT_PUBLIC_SITE_URL! 
 
 export function getMarhamHomeUrl(): string {
   return process.env.NEXT_PUBLIC_MARHAM_HOME_URL ?? DEFAULT_HOME_URL;

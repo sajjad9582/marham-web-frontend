@@ -34,5 +34,5 @@ jobs:
         run: npm run build
         env:
           # Defaults used at runtime; set so Next.js build does not require secrets.
-          NEXT_PUBLIC_MARHAM_API_URL: http://localhost:3001
-          NEXT_PUBLIC_SITE_URL: https://www.marham.pk
+          NEXT_PUBLIC_MARHAM_API_URL: http://localhost:3000
+          NEXT_PUBLIC_SITE_URL: https://www.devweb.marham.pk

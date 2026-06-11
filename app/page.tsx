@@ -2,6 +2,6 @@ import { redirect } from "next/navigation";
 
 export default function Page() {
   return (
-    redirect("https://www.marham.pk/")
+    redirect(process.env.NEXT_PUBLIC_MARHAM_HOME_URL!)
   )
 }

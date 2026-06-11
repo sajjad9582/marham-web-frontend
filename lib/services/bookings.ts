@@ -38,7 +38,7 @@ function validatePhone(phone: string): string {
 
 function buildPaymentUrl(onlineConsultationId: number): string {
   const baseUrl = String(
-    getConfig("MARHAM_URL") || getConfig("cdn.marhamUrl") || "https://www.marham.pk/",
+    getConfig("MARHAM_URL") || getConfig("cdn.marhamUrl") || process.env.NEXT_PUBLIC_SITE_URL!,
   );
   const normalizedBase = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
   return `${normalizedBase}payment/methods/${Program.ONLINE_CONSULTATION}/${onlineConsultationId}?version=v1`;
