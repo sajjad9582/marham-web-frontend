@@ -201,7 +201,7 @@ export async function findDoctorsWithFilters(
   }
 
   const direction = sortDirection || (sortBy === "experience" ? "DESC" : "ASC");
-  let orderBy = "doctor.points DESC";
+  let orderBy = "doctor.rating DESC, doctor.points DESC";
   const orderParams: unknown[] = [];
 
   if (sortBy === "fee") {
