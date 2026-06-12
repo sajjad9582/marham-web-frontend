@@ -284,7 +284,6 @@ export async function findDoctorsWithFilters(
     ...extraSelects,
   ].join(", ");
 
-  const havingClause = topReviewed ? `HAVING ${REVIEW_COUNT_SQL} > 100` : "";
 
   const baseFrom = `
     FROM docdetails doctor
@@ -297,7 +296,6 @@ export async function findDoctorsWithFilters(
     ${diseaseJoin}
     WHERE ${conditions.join(" AND ")}
     GROUP BY doctor.dlID
-    ${havingClause}
   `;
 
   const dataSql = `
@@ -421,9 +419,8 @@ export async function findHospitalsByDoctors(params: {
   doctorIds: number[];
   city?: string;
   area?: string;
-  onlineNow?: boolean;
 }) {
-  const { doctorIds, city, area, onlineNow } = params;
+  const { doctorIds, city, area } = params;
   if (doctorIds.length === 0) return [];
 
   const conditions = [
@@ -434,7 +431,6 @@ export async function findHospitalsByDoctors(params: {
   ];
   if (city) conditions.push(eq(doctorListings.hospitalCity, city));
   if (area) conditions.push(eq(doctorListings.hospitalArea, area));
-  if (onlineNow) conditions.push(eq(doctorListings.hospitalType, "2"));
 
   const rows = await db
     .select({

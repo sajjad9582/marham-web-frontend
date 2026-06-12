@@ -199,7 +199,7 @@ export async function getDoctorListing(
 
   let hospitals: Record<string, unknown>[] = [];
   if (doctorIds.length > 0) {
-    hospitals = await findHospitalsByDoctors({ doctorIds, city, area, onlineNow });
+    hospitals = await findHospitalsByDoctors({ doctorIds, city, area });
   }
 
   const corporateUser = userId ? await getCorporateUserDetails(userId) : null;
