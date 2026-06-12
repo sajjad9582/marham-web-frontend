@@ -77,7 +77,7 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
         <div className="p-3 md:p-5">
           <div className="flex gap-3 md:gap-4">
             <div className="flex-shrink-0">
-              <a href={profileUrl} target="_blank" rel="noopener noreferrer">
+              <a href={profileUrl}  rel="noopener noreferrer">
                 {avatar}
               </a>
             </div>
@@ -86,7 +86,7 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
               <h3 itemProp="name" className="text-sm leading-snug md:text-lg font-bold text-black flex items-start gap-1">
                 <a
                   href={profileUrl}
-                  target="_blank"
+                  
                   rel="noopener noreferrer"
                   className="line-clamp-2 md:line-clamp-none"
                 >
@@ -174,7 +174,7 @@ function ActionButtons({
       {hasVideoCall && (
         <a
           href={videoCallUrl}
-          target="_blank"
+          
           rel="noopener noreferrer"
           className="max-h-20 inline-flex items-center justify-center bg-[var(--color-maingreen)] hover:bg-[var(--color-maingreen)]/90 text-white text-sm font-semibold rounded-sm px-4 py-2.5 transition-colors text-center"
         >
@@ -183,7 +183,7 @@ function ActionButtons({
       )}
       <a
         href={bookAppointmentUrl}
-        target="_blank"
+        
         rel="noopener noreferrer"
         className="max-h-20 bg-[var(--color-darknavy)] hover:bg-[var(--color-brandblue)] text-white text-sm font-semibold rounded-sm px-4 py-2.5 transition-colors text-center"
       >
