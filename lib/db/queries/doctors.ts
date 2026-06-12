@@ -21,6 +21,7 @@ import {
   doctorServices,
 } from "@/lib/db/schema";
 import { DoctorImageUtil } from "@/lib/db/utils";
+import { timeSlotToTimeString } from "@/lib/timeslot-filter-options";
 
 const EXCLUDED_DOCTOR_IDS = [6581, 6582, 24287, 29048, 29117, 8507, 32877];
 const configService = { get: getConfig };
@@ -85,6 +86,7 @@ export async function findDoctorsWithFilters(
     sortBy,
     sortDirection,
     availableToday,
+    timeSlot,
     discounts,
     limit,
     skip,
@@ -182,6 +184,27 @@ export async function findDoctorsWithFilters(
     ];
     const todayColumn = dayColumns[dayjs().day()];
     conditions.push(`listing_filter.${todayColumn} = 1`);
+  }
+  if (timeSlot !== undefined) {
+    const parsedStartTime = `TIME(COALESCE(
+      STR_TO_DATE(NULLIF(listing_filter.startTime,''), '%h:%i %p'),
+      STR_TO_DATE(NULLIF(listing_filter.startTime,''), '%H:%i')
+    ))`;
+    const parsedEndTime = `TIME(COALESCE(
+      STR_TO_DATE(NULLIF(listing_filter.endTime,''), '%h:%i %p'),
+      STR_TO_DATE(NULLIF(listing_filter.endTime,''), '%H:%i')
+    ))`;
+    conditions.push(`listing_filter.startTime IS NOT NULL`);
+    conditions.push(`listing_filter.endTime IS NOT NULL`);
+    conditions.push(`listing_filter.startTime != ''`);
+    conditions.push(`listing_filter.endTime != ''`);
+    conditions.push(`(
+      listing_filter.monday = 1 OR listing_filter.tuesday = 1 OR listing_filter.wednesday = 1
+      OR listing_filter.thursday = 1 OR listing_filter.friday = 1 OR listing_filter.saturday = 1
+      OR listing_filter.sunday = 1
+    )`);
+    conditions.push(`? BETWEEN ${parsedStartTime} AND ${parsedEndTime}`);
+    queryParams.push(timeSlotToTimeString(timeSlot));
   }
   if (discounts) {
     const discountCityClause = city ? "AND dl_disc.hospitalCity = ?" : "";

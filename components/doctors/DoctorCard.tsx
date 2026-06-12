@@ -20,11 +20,7 @@ export function DoctorCard({ doctor }: { doctor: Doctor }) {
   const [imgError, setImgError] = useState(false);
 
   const openBooking = (hospital: Hospital) => {
-    console.log("DoctorCard: openBooking", {
-      doctorId: doctor.doctorId,
-      specialityId: doctor.specialityId,
-      hospital,
-    });
+   
     setSelectedHospital(hospital);
     setModalOpen(true);
   };

@@ -37,6 +37,7 @@ export function parseDoctorsListingFilters(
     lng: parseNumber(getParam(searchParams, "lng")),
     consultationType: parseNumber(getParam(searchParams, "consultationType")),
     availableToday: parseBoolean(getParam(searchParams, "availableToday")),
+    timeSlot: parseNumber(getParam(searchParams, "timeSlot")),
     gender: gender === "male" || gender === "female" || gender === "all" ? gender : undefined,
     sortBy: sortBy === "fee" || sortBy === "experience" ? sortBy : undefined,
     sortDirection:

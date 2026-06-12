@@ -22,6 +22,7 @@ function buildListingQueryParams(filters: DoctorsListingFilters): URLSearchParam
     params.set("consultationType", String(filters.consultationType));
   }
   if (filters.availableToday) params.set("availableToday", "true");
+  if (filters.timeSlot !== undefined) params.set("timeSlot", String(filters.timeSlot));
   if (filters.gender) params.set("gender", filters.gender);
   if (filters.sortBy) params.set("sortBy", filters.sortBy);
   if (filters.sortDirection) params.set("sortDirection", filters.sortDirection);
@@ -61,7 +62,7 @@ function applyClientFilters(doctors: Doctor[], filters: DoctorsListingFilters): 
     result = result.filter((d) => d.locations.some((l) => l.hasDiscount));
   }
 
-  if (filters.topReviewed) {
+  if (filters.topReviewed && filters.lat === undefined && filters.lng === undefined) {
     result = [...result].sort((a, b) => b.rating - a.rating);
   }
 

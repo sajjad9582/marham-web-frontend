@@ -20,7 +20,7 @@ export type DiscountResult = {
 };
 
 export async function calculateDiscount(options: DiscountOptions): Promise<DiscountResult> {
-  const isDoctorDiscount = options.discountFee != null && options.discountFee < options.fee;
+  const isDoctorDiscount = Boolean(options.discountFee) && options.discountFee! < options.fee;
   let finalFee = isDoctorDiscount ? options.discountFee! : options.fee;
   let discountPercentage = 0;
   let finalDiscountFee = 0;

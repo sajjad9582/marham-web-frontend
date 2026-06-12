@@ -27,6 +27,7 @@ export const getDoctorsSchema = z.object({
     .enum(["true", "false", "1", "0"])
     .transform((v) => v === "true" || v === "1")
     .optional(),
+  timeSlot: z.coerce.number().int().min(0).max(2359).optional(),
   discounts: z
     .enum(["true", "false", "1", "0"])
     .transform((v) => v === "true" || v === "1")

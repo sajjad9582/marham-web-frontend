@@ -144,6 +144,7 @@ export async function getDoctorListing(
     sortBy,
     sortDirection,
     availableToday,
+    timeSlot,
     hospitalId,
     discounts,
   } = query;
@@ -181,6 +182,7 @@ export async function getDoctorListing(
     sortBy,
     sortDirection,
     availableToday,
+    timeSlot,
     limit,
     skip,
     isOnPanelOnly,

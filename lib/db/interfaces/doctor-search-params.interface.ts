@@ -17,6 +17,7 @@ export interface DoctorSearchParams {
     sortBy?: 'fee' | 'experience';
     sortDirection?: 'ASC' | 'DESC';
     availableToday?: boolean;
+    timeSlot?: number;
     discounts?: boolean;
     isOnPanelOnly?: boolean;
     hospitalId?: number;

@@ -9,6 +9,7 @@ export type DoctorsListingFilters = {
   lng?: number;
   consultationType?: number;
   availableToday?: boolean;
+  timeSlot?: number;
   gender?: "male" | "female" | "all";
   sortBy?: "fee" | "experience";
   sortDirection?: "ASC" | "DESC";

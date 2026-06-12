@@ -4,6 +4,7 @@ import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { generateTimeslotFilterOptions } from "@/lib/timeslot-filter-options";
 
 const QUICK_CHIPS = [
   { label: "Clear Filters", key: "clear" },
@@ -13,11 +14,13 @@ const QUICK_CHIPS = [
   { label: "Online Now", key: "consultationType", value: "2" },
 ] as const;
 
+const TIMESLOT_OPTIONS = generateTimeslotFilterOptions();
+
 const DROPDOWNS = [
   {
     label: "Choose a Timeslot",
-    key: "availableToday",
-    options: [{ label: "Available Today", value: "true" }],
+    key: "timeSlot",
+    options: TIMESLOT_OPTIONS,
   },
   {
     label: "Fee Range",
@@ -45,6 +48,8 @@ const DROPDOWNS = [
 ] as const;
 
 type DropdownKey = (typeof DROPDOWNS)[number]["key"];
+type DropdownConfig = (typeof DROPDOWNS)[number];
+type DropdownOption = DropdownConfig["options"][number];
 
 type DoctorsFilterChipsProps = {
   city: string;
@@ -147,6 +152,29 @@ export function DoctorsFilterChips({ city, speciality }: DoctorsFilterChipsProps
         : "border-[var(--color-paleblue)] bg-[var(--color-mistblue)] text-[var(--color-brandblue)] hover:bg-[var(--color-paleblue)]"
     }`;
 
+  const isDropdownOptionSelected = (dropdown: DropdownConfig, option: DropdownOption) => {
+    if (dropdown.key === "feeRange" && "minFee" in option) {
+      return (
+        searchParams.get("minFee") === option.minFee &&
+        searchParams.get("maxFee") === option.maxFee
+      );
+    }
+    if (dropdown.key === "timeSlot" && "value" in option) {
+      return searchParams.get("timeSlot") === option.value;
+    }
+    if ("value" in option) {
+      return searchParams.get(dropdown.key) === option.value;
+    }
+    return false;
+  };
+
+  const optionClass = (selected: boolean) =>
+    `block w-full text-left px-3 py-2 text-xs md:text-sm transition-colors ${
+      selected
+        ? "bg-[var(--color-brandblue)] text-white"
+        : "text-[var(--color-darknavy)] hover:bg-[var(--color-skyblue)]"
+    }`;
+
   const handleFeeUpto500 = () => {
     const isCurrentlyActive = searchParams.get("maxFee") === "500";
     if (isCurrentlyActive) {
@@ -163,7 +191,14 @@ export function DoctorsFilterChips({ city, speciality }: DoctorsFilterChipsProps
     }
 
     if (chip.key === "nearMe") {
-      if (!navigator.geolocation) return;
+      if (searchParams.has("lat") && searchParams.has("lng")) {
+        navigateWithParams({ lat: null, lng: null });
+        return;
+      }
+      if (!navigator.geolocation) {
+        console.warn("Geolocation is not supported by this browser.");
+        return;
+      }
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           navigateWithParams({
@@ -171,7 +206,9 @@ export function DoctorsFilterChips({ city, speciality }: DoctorsFilterChipsProps
             lng: String(pos.coords.longitude),
           });
         },
-        () => {},
+        (err) => {
+          console.warn("Geolocation error:", err.message);
+        },
       );
       return;
     }
@@ -184,6 +221,17 @@ export function DoctorsFilterChips({ city, speciality }: DoctorsFilterChipsProps
     if ("value" in chip && chip.value) {
       toggleParam(chip.key, chip.value);
     }
+  };
+
+  const isQuickChipActive = (chip: (typeof QUICK_CHIPS)[number]) => {
+    if (chip.key === "maxFee") return isActive("maxFee", "500");
+    if (chip.key === "nearMe") {
+      return searchParams.has("lat") && searchParams.has("lng");
+    }
+    if (chip.key !== "clear" && "value" in chip && chip.value) {
+      return isActive(chip.key, chip.value);
+    }
+    return false;
   };
 
   const scroll = (direction: "left" | "right") => {
@@ -199,33 +247,49 @@ export function DoctorsFilterChips({ city, speciality }: DoctorsFilterChipsProps
       ? createPortal(
           <div
             ref={portalMenuRef}
-            className="fixed z-[100] rounded-md border border-[var(--color-paleblue)] bg-white shadow-lg py-1"
+            className={`fixed z-[100] rounded-md border border-[var(--color-paleblue)] bg-white shadow-lg overflow-hidden ${
+              openDropdownConfig.key === "timeSlot" ? "max-h-72 flex flex-col" : ""
+            }`}
             style={{
               top: menuPosition.top,
               left: menuPosition.left,
               minWidth: menuPosition.minWidth,
             }}
           >
-            {openDropdownConfig.options.map((option) => (
-              <button
-                key={option.label}
-                type="button"
-                onClick={() => {
-                  if (openDropdownConfig.key === "feeRange" && "minFee" in option) {
-                    navigateWithParams({
-                      minFee: option.minFee,
-                      maxFee: option.maxFee,
-                    });
-                  } else if ("value" in option) {
-                    toggleParam(openDropdownConfig.key, option.value);
-                  }
-                  setOpenDropdown(null);
-                }}
-                className="block w-full text-left px-3 py-2 text-xs md:text-sm text-[var(--color-darknavy)] hover:bg-[var(--color-skyblue)]"
-              >
-                {option.label}
-              </button>
-            ))}
+            {openDropdownConfig.key === "timeSlot" && (
+              <div className="bg-[var(--color-brandblue)] px-3 py-2 text-xs md:text-sm font-medium text-white shrink-0">
+                Choose a Timeslot
+              </div>
+            )}
+            <div
+              className={openDropdownConfig.key === "timeSlot" ? "overflow-y-auto py-1" : "py-1"}
+            >
+              {openDropdownConfig.options.map((option) => {
+                const selected = isDropdownOptionSelected(openDropdownConfig, option);
+                return (
+                  <button
+                    key={option.label}
+                    type="button"
+                    onClick={() => {
+                      if (openDropdownConfig.key === "feeRange" && "minFee" in option) {
+                        navigateWithParams({
+                          minFee: option.minFee,
+                          maxFee: option.maxFee,
+                        });
+                      } else if (openDropdownConfig.key === "timeSlot" && "value" in option) {
+                        toggleParam("timeSlot", option.value);
+                      } else if ("value" in option) {
+                        toggleParam(openDropdownConfig.key, option.value);
+                      }
+                      setOpenDropdown(null);
+                    }}
+                    className={optionClass(selected)}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>,
           document.body,
         )
@@ -254,13 +318,7 @@ export function DoctorsFilterChips({ city, speciality }: DoctorsFilterChipsProps
                 key={chip.label}
                 type="button"
                 onClick={() => handleQuickChip(chip)}
-                className={chipClass(
-                  chip.key === "maxFee"
-                    ? isActive("maxFee", "500")
-                    : chip.key !== "clear" && "value" in chip && chip.value
-                      ? isActive(chip.key, chip.value)
-                      : false,
-                )}
+                className={chipClass(isQuickChipActive(chip))}
               >
                 {chip.label}
               </button>
@@ -271,8 +329,8 @@ export function DoctorsFilterChips({ city, speciality }: DoctorsFilterChipsProps
                 dropdown.key === "feeRange"
                   ? searchParams.has("minFee") ||
                     (searchParams.has("maxFee") && searchParams.get("maxFee") !== "500")
-                  : dropdown.key === "availableToday"
-                    ? searchParams.get("availableToday") === "true"
+                  : dropdown.key === "timeSlot"
+                    ? searchParams.has("timeSlot")
                     : dropdown.key === "gender"
                       ? searchParams.has("gender")
                       : searchParams.get("discounts") === "1";

@@ -89,7 +89,7 @@ export function buildCallcenterUrl(params: DoctorUrlParams): string {
 
 export function buildVideoPaymentUrl(onlineConsultationId: number): string {
   const home = getMarhamHomeUrl().replace(/\/$/, "");
-  return `${home}/payment/methods/${ONLINE_CONSULTATION_PROGRAM_ID}/${onlineConsultationId}?version=v1`;
+  return `${home}/payment/methods/${ONLINE_CONSULTATION_PROGRAM_ID}/${onlineConsultationId}`;
 }
 
 type PhysicalAppointmentThanksUrlParams = {
