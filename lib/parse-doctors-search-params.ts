@@ -46,6 +46,7 @@ export function parseDoctorsListingFilters(
         ? (getParam(searchParams, "sortDirection") as "ASC" | "DESC")
         : undefined,
     topReviewed: parseBoolean(getParam(searchParams, "topReviewed")) ?? false,
+    onlineNow: parseBoolean(getParam(searchParams, "onlineNow")) ?? false,
     discounts: parseBoolean(getParam(searchParams, "discounts")) ?? false,
   };
 }

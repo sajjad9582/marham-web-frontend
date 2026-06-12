@@ -36,10 +36,6 @@ function applyClientFilters(doctors: Doctor[], filters: DoctorsListingFilters): 
     result = result.filter((d) => d.locations.some((l) => l.hasDiscount));
   }
 
-  if (filters.topReviewed && filters.lat === undefined && filters.lng === undefined) {
-    result = [...result].sort((a, b) => b.rating - a.rating);
-  }
-
   return result;
 }
 
@@ -63,6 +59,8 @@ export async function getDoctorsListingPageData(
         sortBy: filters.sortBy,
         sortDirection: filters.sortDirection,
         discounts: filters.discounts,
+        topReviewed: filters.topReviewed,
+        onlineNow: filters.onlineNow,
       },
       undefined,
       true,

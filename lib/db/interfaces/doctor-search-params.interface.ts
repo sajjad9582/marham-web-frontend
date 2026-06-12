@@ -19,6 +19,8 @@ export interface DoctorSearchParams {
     availableToday?: boolean;
     timeSlot?: number;
     discounts?: boolean;
+    topReviewed?: boolean;
+    onlineNow?: boolean;
     isOnPanelOnly?: boolean;
     hospitalId?: number;
 }

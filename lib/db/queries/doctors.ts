@@ -24,6 +24,24 @@ import { DoctorImageUtil } from "@/lib/db/utils";
 import { timeSlotToTimeString } from "@/lib/timeslot-filter-options";
 
 const EXCLUDED_DOCTOR_IDS = [6581, 6582, 24287, 29048, 29117, 8507, 32877];
+const REVIEW_COUNT_SQL = `(SELECT COUNT(r.id) FROM doctor_reviews r WHERE r.dID = doctor.dlID AND r.deleted_at IS NULL AND r.publishedByDoctor = 1)`;
+const LISTING_PARSED_START_TIME = `TIME(COALESCE(
+  STR_TO_DATE(NULLIF(listing_filter.startTime,''), '%h:%i %p'),
+  STR_TO_DATE(NULLIF(listing_filter.startTime,''), '%H:%i')
+))`;
+const LISTING_PARSED_END_TIME = `TIME(COALESCE(
+  STR_TO_DATE(NULLIF(listing_filter.endTime,''), '%h:%i %p'),
+  STR_TO_DATE(NULLIF(listing_filter.endTime,''), '%H:%i')
+))`;
+const WEEKDAY_COLUMNS = [
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+] as const;
 const configService = { get: getConfig };
 
 export type DoctorRow = typeof doctors.$inferSelect;
@@ -88,6 +106,8 @@ export async function findDoctorsWithFilters(
     availableToday,
     timeSlot,
     discounts,
+    topReviewed,
+    onlineNow,
     limit,
     skip,
     isOnPanelOnly,
@@ -173,27 +193,30 @@ export async function findDoctorsWithFilters(
     queryParams.push(String(consultationType));
   }
   if (availableToday) {
-    const dayColumns = [
-      "sunday",
-      "monday",
-      "tuesday",
-      "wednesday",
-      "thursday",
-      "friday",
-      "saturday",
-    ];
-    const todayColumn = dayColumns[dayjs().day()];
+    const todayColumn = WEEKDAY_COLUMNS[dayjs().day()];
     conditions.push(`listing_filter.${todayColumn} = 1`);
   }
+  if (onlineNow) {
+    const todayColumn = WEEKDAY_COLUMNS[dayjs().day()];
+    conditions.push("listing_filter.hospital_type = ?");
+    queryParams.push("2");
+    conditions.push(`listing_filter.${todayColumn} = 1`);
+    conditions.push("listing_filter.startTime IS NOT NULL");
+    conditions.push("listing_filter.endTime IS NOT NULL");
+    conditions.push("listing_filter.startTime != ''");
+    conditions.push("listing_filter.endTime != ''");
+    conditions.push(
+      `CURTIME() BETWEEN ${LISTING_PARSED_START_TIME} AND ${LISTING_PARSED_END_TIME}`,
+    );
+    conditions.push(`(
+      listing_filter.on_leave = 0
+      OR (
+        listing_filter.on_leave = 1
+        AND CURDATE() NOT BETWEEN listing_filter.on_leave_from AND listing_filter.on_leave_to
+      )
+    )`);
+  }
   if (timeSlot !== undefined) {
-    const parsedStartTime = `TIME(COALESCE(
-      STR_TO_DATE(NULLIF(listing_filter.startTime,''), '%h:%i %p'),
-      STR_TO_DATE(NULLIF(listing_filter.startTime,''), '%H:%i')
-    ))`;
-    const parsedEndTime = `TIME(COALESCE(
-      STR_TO_DATE(NULLIF(listing_filter.endTime,''), '%h:%i %p'),
-      STR_TO_DATE(NULLIF(listing_filter.endTime,''), '%H:%i')
-    ))`;
     conditions.push(`listing_filter.startTime IS NOT NULL`);
     conditions.push(`listing_filter.endTime IS NOT NULL`);
     conditions.push(`listing_filter.startTime != ''`);
@@ -203,7 +226,7 @@ export async function findDoctorsWithFilters(
       OR listing_filter.thursday = 1 OR listing_filter.friday = 1 OR listing_filter.saturday = 1
       OR listing_filter.sunday = 1
     )`);
-    conditions.push(`? BETWEEN ${parsedStartTime} AND ${parsedEndTime}`);
+    conditions.push(`? BETWEEN ${LISTING_PARSED_START_TIME} AND ${LISTING_PARSED_END_TIME}`);
     queryParams.push(timeSlotToTimeString(timeSlot));
   }
   if (discounts) {
@@ -237,6 +260,8 @@ export async function findDoctorsWithFilters(
     );
     orderBy = "distance ASC";
     orderParams.push(lat, lng, lat);
+  } else if (topReviewed) {
+    orderBy = "totalReviews DESC";
   }
 
   const selectClause = [
@@ -255,9 +280,11 @@ export async function findDoctorsWithFilters(
     "doctor.points as points",
     "listing_filter.speciality_name as specialityName",
     "listing_filter.doctorSlug as doctorSlug",
-    `(SELECT COUNT(r.id) FROM doctor_reviews r WHERE r.dID = doctor.dlID AND r.deleted_at IS NULL AND r.publishedByDoctor = 1) as totalReviews`,
+    `${REVIEW_COUNT_SQL} as totalReviews`,
     ...extraSelects,
   ].join(", ");
+
+  const havingClause = topReviewed ? `HAVING ${REVIEW_COUNT_SQL} > 100` : "";
 
   const baseFrom = `
     FROM docdetails doctor
@@ -270,6 +297,7 @@ export async function findDoctorsWithFilters(
     ${diseaseJoin}
     WHERE ${conditions.join(" AND ")}
     GROUP BY doctor.dlID
+    ${havingClause}
   `;
 
   const dataSql = `
@@ -393,8 +421,9 @@ export async function findHospitalsByDoctors(params: {
   doctorIds: number[];
   city?: string;
   area?: string;
+  onlineNow?: boolean;
 }) {
-  const { doctorIds, city, area } = params;
+  const { doctorIds, city, area, onlineNow } = params;
   if (doctorIds.length === 0) return [];
 
   const conditions = [
@@ -405,6 +434,7 @@ export async function findHospitalsByDoctors(params: {
   ];
   if (city) conditions.push(eq(doctorListings.hospitalCity, city));
   if (area) conditions.push(eq(doctorListings.hospitalArea, area));
+  if (onlineNow) conditions.push(eq(doctorListings.hospitalType, "2"));
 
   const rows = await db
     .select({

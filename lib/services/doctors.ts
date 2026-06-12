@@ -147,6 +147,8 @@ export async function getDoctorListing(
     timeSlot,
     hospitalId,
     discounts,
+    topReviewed,
+    onlineNow,
   } = query;
 
   const limit = 12;
@@ -188,6 +190,8 @@ export async function getDoctorListing(
     isOnPanelOnly,
     hospitalId,
     discounts,
+    topReviewed,
+    onlineNow,
   };
 
   const [doctors, total] = await findDoctorsWithFilters(filters);
@@ -195,7 +199,7 @@ export async function getDoctorListing(
 
   let hospitals: Record<string, unknown>[] = [];
   if (doctorIds.length > 0) {
-    hospitals = await findHospitalsByDoctors({ doctorIds, city, area });
+    hospitals = await findHospitalsByDoctors({ doctorIds, city, area, onlineNow });
   }
 
   const corporateUser = userId ? await getCorporateUserDetails(userId) : null;

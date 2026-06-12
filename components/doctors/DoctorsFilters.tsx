@@ -11,7 +11,7 @@ const QUICK_CHIPS = [
   { label: "Doctors Near Me", key: "nearMe" },
   { label: "Fee Upto 500", key: "maxFee", value: "500" },
   { label: "Top Reviewed", key: "topReviewed", value: "1" },
-  { label: "Online Now", key: "consultationType", value: "2" },
+  { label: "Online Now", key: "onlineNow", value: "1" },
 ] as const;
 
 const TIMESLOT_OPTIONS = generateTimeslotFilterOptions();

@@ -27,6 +27,8 @@ function buildListingQueryParams(filters: DoctorsListingFilters): URLSearchParam
   if (filters.sortBy) params.set("sortBy", filters.sortBy);
   if (filters.sortDirection) params.set("sortDirection", filters.sortDirection);
   if (filters.discounts) params.set("discounts", "true");
+  if (filters.topReviewed) params.set("topReviewed", "true");
+  if (filters.onlineNow) params.set("onlineNow", "true");
 
   return params;
 }
@@ -60,10 +62,6 @@ function applyClientFilters(doctors: Doctor[], filters: DoctorsListingFilters): 
 
   if (filters.discounts) {
     result = result.filter((d) => d.locations.some((l) => l.hasDiscount));
-  }
-
-  if (filters.topReviewed && filters.lat === undefined && filters.lng === undefined) {
-    result = [...result].sort((a, b) => b.rating - a.rating);
   }
 
   return result;
