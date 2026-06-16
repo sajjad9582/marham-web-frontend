@@ -63,7 +63,7 @@ export async function getDoctorsListingPageData(
         onlineNow: filters.onlineNow,
       },
       undefined,
-      true,
+      false,
     );
 
     if (!data?.doctors) {

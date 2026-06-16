@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const query = parseSearchParams(getDoctorsSchema, searchParams);
-    const data = await getDoctorListing(query, undefined, true);
+    const data = await getDoctorListing(query, undefined, false);
     return jsonSuccess(data);
   } catch (error) {
     return handleApiError(error);

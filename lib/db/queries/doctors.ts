@@ -115,9 +115,6 @@ export async function findDoctorsWithFilters(
   } = params;
 
   const conditions: string[] = [
-    "doctor.hidden_at IS NULL",
-    "doctor.active_at IS NOT NULL",
-    "doctor.inactive_at IS NULL",
     `doctor.dlID NOT IN (${EXCLUDED_DOCTOR_IDS.join(",")})`,
   ];
   const queryParams: unknown[] = [];
@@ -128,7 +125,9 @@ export async function findDoctorsWithFilters(
   }
   if (isOnPanelOnly) {
     conditions.push("doctor.on_panel = ?");
-    queryParams.push(isOnPanelOnly ? 1 : 0);
+    queryParams.push(1);
+    conditions.push("doctor.active_at IS NOT NULL");
+    conditions.push("doctor.inactive_at IS NULL");
   }
   if (hospitalId) {
     conditions.push("listing_filter.hospitalID = ?");
@@ -247,7 +246,7 @@ export async function findDoctorsWithFilters(
   }
 
   const direction = sortDirection || (sortBy === "experience" ? "DESC" : "ASC");
-  let orderBy = "doctor.rating DESC, doctor.points DESC";
+  let orderBy = "doctor.on_panel DESC, doctor.points DESC, doctor.dlID ASC";
   const orderParams: unknown[] = [];
 
   if (sortBy === "fee") {

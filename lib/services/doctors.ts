@@ -124,7 +124,7 @@ async function getDoctorReviews(
 export async function getDoctorListing(
   query: GetDoctorsInput,
   userId?: number,
-  isOnPanelOnly = true,
+  isOnPanelOnly = false,
 ): Promise<{ doctors: ApiDoctor[]; meta: DoctorsListingMeta }> {
   const {
     specialityId,

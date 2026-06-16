@@ -18,11 +18,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "staticdev.marham.pk",
+        hostname: "static.marham.pk",
       },
       {
         protocol: "https",
-        hostname: "staticconnectdev.marham.pk",
+        hostname: "staticconnect.marham.pk",
       },
     ],
   },
