@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { formatSlug } from "@/lib/doctors-data";
 import type { ListingSeoContext } from "@/lib/seo/listing-seo-context";
 import { getOgImageUrl, getSpecialitySeoConfig } from "@/lib/seo/speciality-seo-config";
-import { buildPublicPath, shouldNoIndex } from "@/lib/urls/site-urls";
+import { buildPublicPath } from "@/lib/urls/site-urls";
 
 function buildTitle(context: ListingSeoContext): string {
   const config = getSpecialitySeoConfig(context.specialitySlug);
@@ -53,10 +53,6 @@ export function buildDoctorsListingMetadataFromContext(context: ListingSeoContex
       images: [ogImage],
     },
   };
-
-  if (shouldNoIndex()) {
-    metadata.robots = { index: false, follow: false };
-  }
 
   return metadata;
 }

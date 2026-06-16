@@ -2,13 +2,9 @@ import type { MetadataRoute } from "next";
 
 import { TOP_PAKISTAN_CITIES } from "@/lib/constants/doctors-related-links";
 import { SPECIALITY_SLUG_TO_ID } from "@/lib/constants/speciality-slugs";
-import { getPublicSiteUrl, shouldNoIndex } from "@/lib/urls/site-urls";
+import { getPublicSiteUrl } from "@/lib/urls/site-urls";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  if (shouldNoIndex()) {
-    return [];
-  }
-
   const siteUrl = getPublicSiteUrl();
   const specialitySlugs = Object.keys(SPECIALITY_SLUG_TO_ID);
   const citySlugs = TOP_PAKISTAN_CITIES.map((city) => city.slug);

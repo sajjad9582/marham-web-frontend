@@ -2,6 +2,14 @@ import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
   // output: "standalone",
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "index, follow" }],
+      },
+    ]
+  },
   serverExternalPackages: ["mysql2"],
   experimental: {
     serverMinification: false,

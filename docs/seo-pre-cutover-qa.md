@@ -4,9 +4,10 @@ Run after deploying to staging (devweb) and before www cutover.
 
 ## Staging (devweb.marham.pk)
 
-- [ ] `<meta name="robots" content="noindex, nofollow">` present (or `X-Robots-Tag`)
-- [ ] `robots.txt` disallows crawling
-- [ ] Sitemap empty or not linked from robots
+- [ ] No `noindex` meta tag on listing pages
+- [ ] `X-Robots-Tag: index, follow` (or absent) — not `noindex` from Cloudflare
+- [ ] `robots.txt` allows `/` and links sitemap
+- [ ] Sitemap returns URLs at devweb host
 - [ ] OG + Twitter tags present on `/doctors/lahore/pediatrician`
 - [ ] JSON-LD blocks present (Organization, BreadcrumbList, MedicalWebPage, FAQPage, ItemList, Physician)
 - [ ] H1 count matches API `meta.total` (dev DB count is OK — e.g. 167)

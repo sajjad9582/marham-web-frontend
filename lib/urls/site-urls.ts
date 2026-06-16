@@ -32,10 +32,6 @@ export function isStagingHost(): boolean {
   return siteUrl.includes("devweb.");
 }
 
-export function shouldNoIndex(): boolean {
-  return isStagingHost();
-}
-
 export function buildPublicPath(path: string): string {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   return `${getPublicSiteUrl()}${normalizedPath}`;
