@@ -6,8 +6,11 @@ import { DoctorsList } from "@/components/doctors/DoctorsList";
 import { DoctorsRelatedLinks } from "@/components/doctors/DoctorsRelatedLinks";
 import { DoctorsSearchBar } from "@/components/doctors/DoctorsSearchBar";
 import { DoctorsSeoContent } from "@/components/doctors/DoctorsSeoContent";
-import { formatSlug } from "@/lib/doctors-data";
-import { buildDoctorsListingMetadata } from "@/lib/doctors-metadata";
+import { getDoctorsRelatedLinks } from "@/lib/get-doctors-related-links";
+import { buildDoctorsListingCanonical } from "@/lib/doctors-metadata";
+import { buildDoctorsListingJsonLd } from "@/lib/seo/build-doctors-listing-json-ld";
+import { buildDoctorsListingMetadataFromContext } from "@/lib/seo/build-doctors-listing-metadata";
+import { buildListingSeoContext } from "@/lib/seo/listing-seo-context";
 import { parseDoctorsListingFilters } from "@/lib/parse-doctors-search-params";
 import { getDoctorsListingPageData } from "@/lib/services/doctors-listing-page";
 import type { DoctorsListingSearchParams } from "@/lib/types/doctors-listing-filters";
@@ -24,13 +27,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const safeSlug = slug ?? [];
   const city = safeSlug[0] ?? "lahore";
   const speciality = safeSlug[1] ?? "pediatrician";
-  const { title, description, canonical } = buildDoctorsListingMetadata(city, speciality);
 
-  return {
-    title,
-    description,
-    alternates: { canonical },
-  };
+  const filters = parseDoctorsListingFilters({}, { city, specialitySlug: speciality });
+  const { doctors, meta } = await getDoctorsListingPageData(filters);
+  const related = getDoctorsRelatedLinks(city, speciality);
+  const canonicalUrl = buildDoctorsListingCanonical(city, speciality);
+
+  const context = buildListingSeoContext({
+    citySlug: city,
+    specialitySlug: speciality,
+    doctors,
+    meta,
+    topAreas: related.areas.map((a) => a.label),
+    canonicalUrl,
+  });
+
+  return buildDoctorsListingMetadataFromContext(context);
 }
 
 export default async function SpecialitiesPage({ params, searchParams }: PageProps) {
@@ -43,40 +55,45 @@ export default async function SpecialitiesPage({ params, searchParams }: PagePro
 
   const filters = parseDoctorsListingFilters(resolvedSearchParams, { city, specialitySlug: speciality });
   const { doctors, meta } = await getDoctorsListingPageData(filters);
+  const related = getDoctorsRelatedLinks(city, speciality);
+  const canonicalUrl = buildDoctorsListingCanonical(city, speciality);
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    name: `${formatSlug(speciality)}s in ${formatSlug(city)}`,
-    itemListElement: doctors.map((d, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      item: {
-        "@type": "Physician",
-        name: d.name,
-        medicalSpecialty: d.specialty,
-        address: {
-          "@type": "PostalAddress",
-          addressLocality: formatSlug(city),
-        },
-      },
-    })),
-  };
+  const context = buildListingSeoContext({
+    citySlug: city,
+    specialitySlug: speciality,
+    doctors,
+    meta,
+    topAreas: related.areas.map((a) => a.label),
+    canonicalUrl,
+  });
+
+  const jsonLdBlocks = buildDoctorsListingJsonLd(context);
 
   return (
     <main className="bg-white min-h-screen">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {jsonLdBlocks.map((block, index) => (
+        <script
+          key={index}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(block) }}
+        />
+      ))}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-10 py-2 md:py-6 space-y-2 md:space-y-4">
-        <DoctorsHero city={city} speciality={speciality} totalCount={meta.total} />
+        <DoctorsHero context={context} />
         <DoctorsSearchBar city={city} speciality={speciality} />
         <Suspense fallback={null}>
           <DoctorsFilterChips city={city} speciality={speciality} />
         </Suspense>
-        <DoctorsList doctors={doctors} meta={meta} city={city} speciality={speciality} filters={filters} />
-        <DoctorsSeoContent  />
+        <DoctorsList
+          doctors={doctors}
+          meta={meta}
+          city={city}
+          speciality={speciality}
+          filters={filters}
+          specName={context.specName}
+          cityName={context.cityName}
+        />
+        <DoctorsSeoContent context={context} />
         <DoctorsRelatedLinks city={city} speciality={speciality} />
       </div>
     </main>

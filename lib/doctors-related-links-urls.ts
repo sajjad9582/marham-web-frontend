@@ -1,7 +1,7 @@
-import { MARHAM_HOME_URL } from "@/lib/constants/navigation";
+import { getPublicSiteUrl } from "@/lib/urls/site-urls";
 
 function joinLegacyPath(...segments: string[]): string {
-  return `${MARHAM_HOME_URL}/${segments.map((s) => s.replace(/^\/+|\/+$/g, "")).join("/")}`;
+  return `${getPublicSiteUrl()}/${segments.map((s) => s.replace(/^\/+|\/+$/g, "")).join("/")}`;
 }
 
 export function buildLegacyHospitalSpecialityUrl(

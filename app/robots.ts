@@ -1,9 +1,18 @@
 import type { MetadataRoute } from "next";
 
-import { getSiteUrl } from "@/lib/site-url";
+import { getPublicSiteUrl, shouldNoIndex } from "@/lib/urls/site-urls";
 
 export default function robots(): MetadataRoute.Robots {
-  const siteUrl = getSiteUrl();
+  if (shouldNoIndex()) {
+    return {
+      rules: {
+        userAgent: "*",
+        disallow: "/",
+      },
+    };
+  }
+
+  const siteUrl = getPublicSiteUrl();
 
   return {
     rules: {

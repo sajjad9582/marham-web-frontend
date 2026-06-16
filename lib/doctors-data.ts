@@ -42,8 +42,6 @@ export type Doctor = {
   profilePic?: string;
 };
 
-export const TOTAL_COUNT = 535;
-
 export const CITIES = ["Lahore", "Karachi", "Islamabad", "Multan", "Peshawar", "Faisalabad", "Sargodha", "Quetta"];
 
 export const SPECIALITY_QUICK_LINKS: { en: string; ur: string }[] = [
