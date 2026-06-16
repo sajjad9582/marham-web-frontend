@@ -50,7 +50,10 @@ export function getDoctorsRelatedLinks(city: string, speciality: string): Doctor
 
   const areas =
     config?.areas.map((area) => ({
-      label: `${specName} in ${area.label} ${cityName}`,
+      label:
+        area.label.toLowerCase() === cityName.toLowerCase()
+          ? `${specName} in ${cityName}`
+          : `${specName} in ${area.label}, ${cityName}`,
       href: buildLegacyAreaListingUrl(citySlug, specialitySlug, area.slug),
     })) ?? [];
 

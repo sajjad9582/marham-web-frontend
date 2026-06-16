@@ -1,6 +1,8 @@
 // navigation.ts
 
-export const MARHAM_HOME_URL = "https://www.marham.pk"
+import { getPublicSiteUrl } from "@/lib/urls/site-urls";
+
+export const MARHAM_HOME_URL = getPublicSiteUrl();
 
 export type NavChildLink = {
   label: string

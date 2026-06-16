@@ -6,7 +6,7 @@ import type { Metadata } from "next"
 import "./globals.css"
 import { SiteHeader } from "@/components/layout/site-header"
 import Footer from "@/components/layout/Footer"
-import { getSiteUrl } from "@/lib/site-url"
+import { getAppOrigin, shouldNoIndex } from "@/lib/urls/site-urls"
 import { cn } from "@/lib/utils"
 
 const poppins = Poppins({
@@ -22,7 +22,8 @@ const gtmId = process.env.NEXT_PUBLIC_GTM_ID
 const analyticsEnabled = process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === "true"
 
 export const metadata: Metadata = {
-  metadataBase: new URL(getSiteUrl()),
+  metadataBase: new URL(getAppOrigin()),
+  ...(shouldNoIndex() ? { robots: { index: false, follow: false } } : {}),
 }
 
 export default function RootLayout({
