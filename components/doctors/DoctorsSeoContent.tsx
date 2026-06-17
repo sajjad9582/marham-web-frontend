@@ -556,9 +556,9 @@ function FaqDetails({
 
     <details className="group bg-base">
 
-      <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-slate-900">
+      <summary className="flex cursor-pointer items-center justify-between gap-3 px-4 py-3">
 
-        {question}
+        <h4 className="m-0 text-sm font-semibold text-slate-900">{question}</h4>
 
         <ChevronDownIcon className="size-4 shrink-0 text-slate-600 transition-transform duration-200 group-open:rotate-180" />
 
