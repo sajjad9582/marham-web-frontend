@@ -6,6 +6,7 @@ import { DoctorsList } from "@/components/doctors/DoctorsList";
 import { DoctorsRelatedLinks } from "@/components/doctors/DoctorsRelatedLinks";
 import { DoctorsSearchBar } from "@/components/doctors/DoctorsSearchBar";
 import { DoctorsSeoContent } from "@/components/doctors/DoctorsSeoContent";
+import { WhatsAppWidgetConfig } from "@/components/whatsapp";
 import { getDoctorsRelatedLinks } from "@/lib/get-doctors-related-links";
 import { buildDoctorsListingCanonical } from "@/lib/doctors-metadata";
 import { buildDoctorsListingJsonLd } from "@/lib/seo/build-doctors-listing-json-ld";
@@ -71,6 +72,10 @@ export default async function SpecialitiesPage({ params, searchParams }: PagePro
 
   return (
     <main className="bg-white min-h-screen">
+      <WhatsAppWidgetConfig
+        specialityId={filters.specialityId ?? 0}
+        pageUrl={canonicalUrl}
+      />
       {jsonLdBlocks.map((block, index) => (
         <script
           key={index}

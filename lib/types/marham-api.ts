@@ -62,6 +62,15 @@ export type DoctorsListingResponse = {
   };
 };
 
+export type CallMyDoctorsResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    doctors: ApiDoctor[];
+    meta: { total: number };
+  };
+};
+
 export type ValidatePromoCodeResponse = {
   success: boolean;
   message: string;

@@ -6,6 +6,7 @@ import {
   findDoctorById as findDoctorRowById,
   findDoctorListingById as findDoctorListingRowById,
   findDoctorProfile,
+  findCallMyDoctorsForListing,
   findDoctorsWithFilters,
   findHospitalsByDoctors,
   getDoctorDiseases,
@@ -19,6 +20,8 @@ import {
 import { isDoctorFavorited } from "@/lib/db/queries/medical-shareables";
 import { getSpecialityIdsBySymptom } from "@/lib/db/queries/symptom-specialities";
 import type { GetDoctorsInput } from "@/lib/schemas/doctors";
+import type { GetCallMyDoctorsInput } from "@/lib/schemas/call-my-doctors";
+import { formatSlug } from "@/lib/doctors-data";
 import { HtmlUtil, DateUtil } from "@/lib/db/utils";
 import { ReviewMapperUtil } from "@/lib/db/utils/review-mapper.util";
 import { DoctorBadgesUtil } from "@/lib/db/utils/doctor-badges.util";
@@ -292,6 +295,116 @@ export async function getDoctorListing(
       page,
       lastPage: Math.ceil(total / limit),
     },
+  };
+}
+
+export async function getCallMyDoctorsForListing(
+  query: GetCallMyDoctorsInput,
+  userId?: number,
+): Promise<{ doctors: ApiDoctor[]; meta: { total: number } }> {
+  const { specialityId } = query;
+  const city = query.city ? formatSlug(query.city) : undefined;
+
+  let doctors = await findCallMyDoctorsForListing({ specialityId, city });
+  let hospitalCity = 0;
+  if (city && doctors.length === 0) {
+    doctors = await findCallMyDoctorsForListing({ specialityId });
+    hospitalCity = undefined;
+  }
+
+  const doctorIds = doctors.map((d) => d.id);
+  let hospitals: Record<string, unknown>[] = [];
+  if (doctorIds.length > 0) {
+    hospitals = await findHospitalsByDoctors({ doctorIds, city: hospitalCity });
+    hospitals = hospitals.filter((hospital) => Number(hospital.hospitalType) === 2);
+  }
+
+  const corporateUser = userId ? await getCorporateUserDetails(userId) : null;
+
+  const hospitalsWithDiscounts = await Promise.all(
+    hospitals.map(async (hospital) => {
+      const fee = Number(hospital.fee) || 0;
+      const rawDiscountFee = Number(hospital.discountFee) || 0;
+      const hasDiscount = rawDiscountFee > 0 && rawDiscountFee < fee;
+
+      if (!hasDiscount) {
+        return {
+          ...hospital,
+          hasDiscount: false,
+          finalDiscountFee: fee,
+          discountPercentage: 0,
+        };
+      }
+
+      const { finalDiscountFee, discountPercentage } = await calculateDiscount({
+        fee,
+        discountFee: rawDiscountFee,
+        hospitalType: hospital.hospitalType,
+        isOnlinePaymentEnabled: hospital.isOnlinePaymentEnabled,
+        isCorporateUser: corporateUser !== null,
+        corporateAppointmentDiscount: corporateUser?.appointmentDiscountPercentage,
+        corporateConsultationDiscount: corporateUser?.videoConsultationDiscountPercentage,
+      });
+      return { ...hospital, hasDiscount: true, finalDiscountFee, discountPercentage };
+    }),
+  );
+
+  const hospitalsByDoctor = hospitalsWithDiscounts.reduce(
+    (acc, hospital) => {
+      if (!acc[hospital.doctorId]) acc[hospital.doctorId] = [];
+      acc[hospital.doctorId].push({
+        doctorHospitalId: hospital.id,
+        doctorId: hospital.doctorId,
+        hospitalId: hospital.hospitalId,
+        doctorSlug: hospital.doctorSlug,
+        hospitalName: hospital.hospitalName,
+        hospitalType: Number(hospital.hospitalType) || 1,
+        hospitalArea: hospital.hospitalArea,
+        hospitalCity: hospital.hospitalCity,
+        fee: hospital.fee,
+        hasDiscount: hospital.hasDiscount,
+        isOnlinePaymentEnabled: hospital.isOnlinePaymentEnabled,
+        discountFee:
+          hospital.hasDiscount && hospital.fee != hospital.finalDiscountFee
+            ? hospital.finalDiscountFee
+            : 0,
+        discount:
+          hospital.hasDiscount && hospital.finalDiscountFee
+            ? hospital.fee - hospital.finalDiscountFee
+            : 0,
+        discountPercentage: hospital.hasDiscount ? hospital.discountPercentage || 0 : 0,
+        lat: hospital.hospital?.lat,
+        lng: hospital.hospital?.lng,
+        isLocationVerified: hospital.hospital?.locationVerifiedAt !== null,
+      });
+      return acc;
+    },
+    {} as Record<number, Record<string, unknown>[]>,
+  );
+
+  const formattedData = doctors.map((doc) => ({
+    doctorId: doc.id,
+    slug: doc.doctorSlug,
+    name: doc.name,
+    experience: doc.experience,
+    profilePic: doc.profilePic,
+    areasOfInterest: doc.areasOfInterest,
+    firstComeFirstServe: doc.firstComeFirstServe,
+    satisfactionScore: doc.diagnosisScore || 0,
+    rating: doc.rating || 0,
+    specialityId: Number(doc.specialityId),
+    specialityName: doc.specialityName,
+    diagnosisScore: doc.diagnosisScore,
+    degree: doc.degree,
+    reviewsCount: doc.totalReviews,
+    isPromotional: DoctorBadgesUtil.isPromotional(doc.id),
+    isTopBooked: DoctorBadgesUtil.isTopBooked(doc.id),
+    hospitals: hospitalsByDoctor[doc.id] || [],
+  }));
+
+  return {
+    doctors: formattedData as ApiDoctor[],
+    meta: { total: formattedData.length },
   };
 }
 
