@@ -1,5 +1,6 @@
 export const MARHAM_API_ENDPOINTS = {
   DOCTORS_LISTING: `${process.env.NEXT_PUBLIC_MARHAM_API_PREFIX}/doctors/listing`,
+  DOCTORS_CALL_MY: `${process.env.NEXT_PUBLIC_MARHAM_API_PREFIX}/doctors/call-my-doctors`,
   DOCTORS_PROFILE: `${process.env.NEXT_PUBLIC_MARHAM_API_PREFIX}/doctors/profile`,
   DOCTORS_AVAILABLE_SLOTS: `${process.env.NEXT_PUBLIC_MARHAM_API_PREFIX}/doctors/available-slots`,
   PROMO_CODES_VALIDATE: `${process.env.NEXT_PUBLIC_MARHAM_API_PREFIX}/promo-codes/validate`,

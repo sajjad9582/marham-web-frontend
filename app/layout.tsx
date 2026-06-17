@@ -5,6 +5,10 @@ import type { Metadata } from "next"
 import "./globals.css"
 import { SiteHeader } from "@/components/layout/site-header"
 import Footer from "@/components/layout/Footer"
+import {
+  WhatsAppChatWidget,
+  WhatsAppWidgetProvider,
+} from "@/components/whatsapp"
 import { getAppOrigin } from "@/lib/urls/site-urls"
 import { cn } from "@/lib/utils"
 
@@ -37,9 +41,12 @@ export default function RootLayout({
     >
       {analyticsEnabled && gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
       <body className="min-h-svh bg-pagegray font-sans">
-        <SiteHeader />
-        {children}
-        <Footer />
+        <WhatsAppWidgetProvider>
+          <SiteHeader />
+          {children}
+          <Footer />
+          <WhatsAppChatWidget />
+        </WhatsAppWidgetProvider>
       </body>
     </html>
   )

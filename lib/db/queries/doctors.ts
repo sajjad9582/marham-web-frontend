@@ -344,6 +344,121 @@ export async function findDoctorsWithFilters(
   return [doctorsWithSpeciality, total];
 }
 
+export type CallMyDoctorListingParams = {
+  specialityId: number;
+  city?: string;
+  limit?: number;
+};
+
+export async function findCallMyDoctorsForListing(
+  params: CallMyDoctorListingParams,
+): Promise<DoctorWithSpeciality[]> {
+  const { specialityId, city, limit = 5 } = params;
+  const todayColumn = WEEKDAY_COLUMNS[dayjs().day()];
+  const nowTime = dayjs().format("h:mm A");
+  const endTime = dayjs().add(1, "hour").format("h:mm A");
+
+  const conditions: string[] = [
+    `doctor.dlID NOT IN (${EXCLUDED_DOCTOR_IDS.join(",")})`,
+    "doctor.video_consultation = 1",
+    "doctor.on_panel = 1",
+    "listing_filter.hospital_type = 2",
+    `listing_filter.${todayColumn} = 1`,
+    "listing_filter.startTime IS NOT NULL",
+    "listing_filter.endTime IS NOT NULL",
+    "listing_filter.startTime != ''",
+    "listing_filter.endTime != ''",
+    `STR_TO_DATE(listing_filter.startTime, '%h:%i %p') <= STR_TO_DATE(?, '%h:%i %p')`,
+    `STR_TO_DATE(listing_filter.endTime, '%h:%i %p') >= STR_TO_DATE(?, '%h:%i %p')`,
+    `(
+      listing_filter.speciality_id = ?
+      OR listing_filter.similar_id_1 = ?
+      OR listing_filter.similar_id_2 = ?
+      OR listing_filter.similar_id_3 = ?
+      OR listing_filter.similar_id_4 = ?
+      OR listing_filter.similar_id_5 = ?
+    )`,
+  ];
+  const queryParams: unknown[] = [
+    nowTime,
+    endTime,
+    specialityId,
+    specialityId,
+    specialityId,
+    specialityId,
+    specialityId,
+    specialityId,
+  ];
+
+  // if (city) {
+  //   conditions.push("listing_filter.hospitalCity = ?");
+  //   queryParams.push(city);
+  // }
+
+  const selectClause = [
+    "doctor.dlID as id",
+    "doctor.docName as name",
+    "doctor.docExp as experience",
+    "doctor.docPic as profilePic",
+    "doctor.gender as gender",
+    "doctor.docDegree as degree",
+    "doctor.first_come_first_serve as firstComeFirstServe",
+    "doctor.average_waiting_time as averageWaitingTime",
+    "doctor.staff_score as staffScore",
+    "doctor.spID as specialityId",
+    "doctor.diagnosis_score as diagnosisScore",
+    "doctor.rating as rating",
+    "doctor.points as points",
+    "listing_filter.speciality_name as specialityName",
+    "listing_filter.doctorSlug as doctorSlug",
+    `${REVIEW_COUNT_SQL} as totalReviews`,
+  ].join(", ");
+
+  const sql = `
+    SELECT ${selectClause}
+    FROM docdetails doctor
+    INNER JOIN doclisting listing_filter
+      ON listing_filter.dlID = doctor.dlID
+      AND listing_filter.deleted_at IS NULL
+      AND listing_filter.active_at IS NOT NULL
+      AND listing_filter.inactive_at IS NULL
+    WHERE ${conditions.join(" AND ")}
+    GROUP BY doctor.dlID
+    HAVING totalReviews >= 10
+    ORDER BY listing_filter.docFee ASC
+    LIMIT ?
+  `;
+
+  const [rawRows] = await pool.query<RowDataPacket[]>(sql, [...queryParams, limit]);
+  const doctorIds = (rawRows as RowDataPacket[]).map((r) => Number(r.id));
+  const areasMap = await getAreasOfInterestByDoctorIds(doctorIds);
+
+  return (rawRows as RowDataPacket[]).map((row) => ({
+    id: Number(row.id),
+    name: row.name,
+    experience: row.experience,
+    profilePic: DoctorImageUtil.getDoctorImageUrl(
+      configService,
+      Number(row.id),
+      row.profilePic,
+      row.gender || 1,
+    ),
+    gender: row.gender,
+    degree: row.degree,
+    firstComeFirstServe: row.firstComeFirstServe,
+    averageWaitingTime: row.averageWaitingTime,
+    staffScore: row.staffScore,
+    specialityId: Number(row.specialityId),
+    diagnosisScore: row.diagnosisScore,
+    rating: row.rating,
+    points: row.points,
+    specialityName: row.specialityName ?? null,
+    doctorSlug: row.doctorSlug ?? null,
+    totalReviews: row.totalReviews ? parseInt(String(row.totalReviews), 10) : 0,
+    areasOfInterest: areasMap.get(Number(row.id)) || [],
+  }));
+}
+
 export async function findDoctorProfile(doctorId: number) {
   const rows = await db
     .select({
