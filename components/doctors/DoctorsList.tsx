@@ -10,7 +10,7 @@ import { fetchDoctorsListing } from "@/lib/client/doctors-listing-service";
 import type { DoctorsListingFilters } from "@/lib/types/doctors-listing-filters";
 import type { DoctorsListingMeta } from "@/lib/types/marham-api";
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 12;
 
 type DoctorsListProps = {
   doctors: Doctor[];

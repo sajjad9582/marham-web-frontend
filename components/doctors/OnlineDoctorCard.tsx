@@ -49,7 +49,6 @@ export function OnlineDoctorCard({ doctor }: OnlineDoctorCardProps) {
       <div className="flex gap-2.5">
         <Link
           href={profileUrl}
-          target="_blank"
           rel="noopener noreferrer"
           className="shrink-0"
         >
@@ -75,7 +74,6 @@ export function OnlineDoctorCard({ doctor }: OnlineDoctorCardProps) {
         <div className="min-w-0 flex-1">
           <Link
             href={profileUrl}
-            target="_blank"
             rel="noopener noreferrer"
             className="block text-sm font-bold leading-tight text-white underline underline-offset-2 line-clamp-2 min-h-[2.5rem] hover:text-white/90"
           >
@@ -109,7 +107,6 @@ export function OnlineDoctorCard({ doctor }: OnlineDoctorCardProps) {
 
         <a
           href={callNowUrl}
-          target="_blank"
           rel="noopener noreferrer"
           className="mt-3 flex w-full items-center justify-center rounded-md bg-maingreen hover:bg-maingreen/70 text-white text-sm font-semibold py-2.5 transition-colors"
         >

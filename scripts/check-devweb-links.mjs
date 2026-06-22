@@ -21,10 +21,6 @@ function walk(dir, files = []) {
 }
 
 function main() {
-  if (process.env.NEXT_PUBLIC_IS_STAGING === "true") {
-    console.log("Skipping devweb check: staging build.");
-    return;
-  }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
   if (siteUrl.includes("devweb.")) {
