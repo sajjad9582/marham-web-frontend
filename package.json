@@ -13,6 +13,7 @@
     "check:devweb-links": "node scripts/check-devweb-links.mjs"
   },
   "dependencies": {
+    "@browserbasehq/stagehand": "^3.6.0",
     "@hookform/resolvers": "^5.4.0",
     "@next/third-parties": "^16.2.7",
     "@radix-ui/react-dialog": "^1.1.15",

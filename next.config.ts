@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
       },
     ]
   },
-  serverExternalPackages: ["mysql2"],
+  serverExternalPackages: ["mysql2", "@browserbasehq/stagehand"],
   experimental: {
     serverMinification: false,
   },
@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "staticconnect.marham.pk",
+      },
+       {
+        protocol: 'https',
+        hostname: 'staticconnectdev.marham.pk',
       },
     ],
   },

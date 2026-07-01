@@ -9,6 +9,7 @@ import {
   WhatsAppChatWidget,
   WhatsAppWidgetProvider,
 } from "@/components/whatsapp"
+import { BookingAssistantWidget } from "@/components/booking-assistant"
 import { getAppOrigin } from "@/lib/urls/site-urls"
 import { cn } from "@/lib/utils"
 
@@ -46,6 +47,7 @@ export default function RootLayout({
           {children}
           <Footer />
           <WhatsAppChatWidget />
+          <BookingAssistantWidget />
         </WhatsAppWidgetProvider>
       </body>
     </html>
